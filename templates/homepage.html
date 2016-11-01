@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block body %}
+    THIS IS THE HOMEPAGE
+    <form action="/login" method="POST">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="submit" value="Log In"><br>
+    </form>
+    <form action="/signup" method="GET">
+        <input type="submit" value="Sign Up">
+    </form>
+    <a href="/">Home</a>
+    <a href="/newchore">New Chore</a>
+    <a href="/acceptchore">Accept Chore</a>
+{% endblock %}

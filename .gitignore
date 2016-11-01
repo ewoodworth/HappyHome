@@ -1,0 +1,5 @@
+env/
+secrets
+*.pyc
+grayscalebase.png
+.DS_Store
