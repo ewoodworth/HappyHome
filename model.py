@@ -24,7 +24,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=False)
     phone_number = db.Column(db.String(15), nullable=False)
     address = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
-              nullable=False)
+              nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -39,6 +39,7 @@ class Address(db.Model):
 
     address_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     address = db.Column(db.String(100), nullable=False)
+    apartment = db.Column(db.String(6), nullable=True)
     city = db.Column(db.String(35), nullable=False)
     state = db.Column(db.String(2), nullable=False)
     zipcode = db.Column(db.String(5), nullable=False)
@@ -103,7 +104,9 @@ def connect_to_db(app):
 
     # Configure to use our PostgreSQL database
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///happyhome'
-#    app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+    app.config['SQLALCHEMY_ECHO'] = True
+    
     db.app = app
     db.init_app(app)
 

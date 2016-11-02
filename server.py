@@ -19,7 +19,7 @@ app.jinja_env.auto_reload=True
 @app.route('/')
 def index():
     """Homepage."""
-    if session.get('user_id', False):  #but fix this for circu,mstances here
+    if session.get('user_id', False):
         return render_template("dashboard.html")
     else:
         return render_template("homepage.html")
@@ -53,6 +53,51 @@ def signup():
 @app.route('/signup', methods=['POST'])
 def newuser():
     """Process new user"""
+
+    email = request.form["email"]
+    password = request.form["password"]
+    name = request.form["name"]
+    phone_number = request.form["phone_number"]
+
+    new_user = User(email=email, password=password, name=name, 
+               phone_number=phone_number)
+
+    session["user_id"] = email #Start browser session
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return redirect("/add_address")
+
+@app.route('/add_address')
+def new_address():
+    """Present new address form"""
+    return render_template("joinhousehold.html")
+
+@app.route('/add_address', methods=['POST'])
+def add_address():
+    """Add address to user account"""
+    # Get form variables
+    address = request.form["address"]
+    apartment = request.form["apartment"]
+    city =  request.form["city"]
+    state =  request.form["state"]
+    zipcode = request.form["zipcode"]
+
+    new_address = Address(address=address, apartment=apartment, city=city,
+                  state=state, zipcode=zipcode)
+    
+
+    ##Sooo... how do I make a JSON object?    
+    # geolocation_string = address +" "+ city +" "+ state +" "+ zipcode
+    # ## ASSEMBLE ADDRESS IN THE FORMAT THAT GOOGLE MAPS NEEDS IT, GET LAT/LONG
+    # https://www.googleapis.com/geolocation/v1/geolocate?key=YOUR_API_KEY 
+    # http://maps.googleapis.com/maps/api/geocode/outputFormat?parameters
+
+    ## FOR THAT ADDRESS
+    ## SEEK THAT ADDRESS IN DB
+    ## IF FOUND VERIFY W/USER
+    ## USER SAYS YES OR VERIFY
     return redirect("/")
 
 @app.route('/newchore', methods=['GET'])
@@ -86,7 +131,6 @@ if __name__ == "__main__":
     app.debug = True
 
     connect_to_db(app)
-
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
