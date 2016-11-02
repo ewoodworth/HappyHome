@@ -5,6 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, UserChores
 
+import requests
+
 
 app = Flask(__name__)
 
@@ -78,18 +80,31 @@ def new_address():
 def add_address():
     """Add address to user account"""
     # Get form variables
-    address = request.form["address"]
-    apartment = request.form["apartment"]
-    city =  request.form["city"]
-    state =  request.form["state"]
-    zipcode = request.form["zipcode"]
+    address = request.form.get["address"]  #switch these over to .get
+    apartment = request.form.get["apartment"]
+    city =  request.form.get["city"]
+    state =  request.form.get["state"]
+    zipcode = request.form.get["zipcode"]
 
+    geocode_string = address +" "+ city +" "+ state +" "+ zipcode
+
+    #Make google give me a JSON object
+    #parse JSON for latitutde and longitude
+    google_key = os.environ['GOOGLE_GEOCODING_KEY']
     new_address = Address(address=address, apartment=apartment, city=city,
                   state=state, zipcode=zipcode)
+
+    r = requests.get(
+    "https://maps.googleapis.com/maps/api/geocode/json?address="+new_address+"&key="+google_key)
+
+    address_jsom = r.json()
+
+
+
     
 
     ##Sooo... how do I make a JSON object?    
-    # geolocation_string = address +" "+ city +" "+ state +" "+ zipcode
+    # 
     # ## ASSEMBLE ADDRESS IN THE FORMAT THAT GOOGLE MAPS NEEDS IT, GET LAT/LONG
     # https://www.googleapis.com/geolocation/v1/geolocate?key=YOUR_API_KEY 
     # http://maps.googleapis.com/maps/api/geocode/outputFormat?parameters
