@@ -69,51 +69,45 @@ def newuser():
     db.session.add(new_user)
     db.session.commit()
 
-    return redirect("/add_address")
+    return redirect("/process_address")
 
 @app.route('/add_address')
 def new_address():
     """Present new address form"""
     return render_template("joinhousehold.html")
 
-@app.route('/add_address', methods=['POST'])
-def add_address():
+@app.route('/process_address', methods=['POST'])
+def process_address():
     """Add address to user account"""
     # Get form variables
-    address = request.form.get["address"]  #switch these over to .get
+    address = request.form.get["address"]
+    #prep address for inclusion in API query
+    address = address.replace(" ", "+")
     apartment = request.form.get["apartment"]
     city =  request.form.get["city"]
     state =  request.form.get["state"]
     zipcode = request.form.get["zipcode"]
-
-    geocode_string = address +" "+ city +" "+ state +" "+ zipcode
-
-    #Make google give me a JSON object
-    #parse JSON for latitutde and longitude
+    #concatenate user input for API query
+    geocode_string = address +"+"+ city +"+"+ state +"+"+ zipcode
     google_key = os.environ['GOOGLE_GEOCODING_KEY']
-    new_address = Address(address=address, apartment=apartment, city=city,
-                  state=state, zipcode=zipcode)
-
+    #Make google give me a JSON object
     r = requests.get(
     "https://maps.googleapis.com/maps/api/geocode/json?address="+new_address+"&key="+google_key)
+    address_json = r.json()
+    #parse JSON for latitutde and longitude
+    standard_address = address_json[u'results'][0][u'formatted_address']
+    #If needed later there are smaller pixels of address data in the JSON objects
+    latitude = address_json[u'results'][0][u'geometry'][u'location'][u'lat']
+    longitude = address_json[u'results'][0][u'geometry'][u'location'][u'lng']
 
-    address_jsom = r.json()
 
-
-
-    
-
-    ##Sooo... how do I make a JSON object?    
-    # 
-    # ## ASSEMBLE ADDRESS IN THE FORMAT THAT GOOGLE MAPS NEEDS IT, GET LAT/LONG
-    # https://www.googleapis.com/geolocation/v1/geolocate?key=YOUR_API_KEY 
-    # http://maps.googleapis.com/maps/api/geocode/outputFormat?parameters
-
-    ## FOR THAT ADDRESS
     ## SEEK THAT ADDRESS IN DB
     ## IF FOUND VERIFY W/USER
     ## USER SAYS YES OR VERIFY
     return redirect("/")
+
+@app.route CONFIRM ADDRESS
+@app.route FAIL CONFIRMATION
 
 @app.route('/newchore', methods=['GET'])
 def createchore():
