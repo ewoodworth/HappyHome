@@ -93,8 +93,6 @@ def new_address():
 @app.route('/process_address', methods=['POST'])
 def process_address():
     """Add address to user account"""
-                                        # Get form variables
-                                        # address = request.form.get["address"]
     #prep address for inclusion in API query                    
     address = request.form.get("address")
     apartment = request.form.get("apartment")
@@ -103,7 +101,6 @@ def process_address():
     zipcode = request.form.get("zipcode")
     #concatenate user input for API query
     address = address.replace(" ", "+")
-    #This ^ needs to happen in JS elsewhere
     geocode_string = address +"+"+ city +"+"+ state +"+"+ zipcode
     google_key = os.environ['GOOGLE_MAPS_GEOCODING']
     #Make google give me a JSON object
@@ -111,63 +108,37 @@ def process_address():
     "https://maps.googleapis.com/maps/api/geocode/json?address="+geocode_string+"&key="+google_key)
     address_json = r.json()
     #parse JSON for latitutde and longitude
-    #Should I put these into the Global Scope to get everything where it needs to be?
     latitude = address_json[u'results'][0][u'geometry'][u'location'][u'lat']
     longitude = address_json[u'results'][0][u'geometry'][u'location'][u'lng']
     standard_address = address_json[u'results'][0][u'formatted_address']
-    #If needed later there are smaller pixels of address data in the JSON objects
-    #if standard addresses 
-    #COMPARE LAT AND LONG TO DATABASE, FIRST USER GETS CODE AND LINK TO ADD HOUSEMATES
-    new_address =  Address(standard_address=standard_address, latitude=latitude, 
-                   longitude=longitude, apartment=apartment)
-
-    db.session.add(new_address)
-    db.session.commit()
-
-    address = Address.query.filter_by(standard_address=standard_address).first()
+    #See if the address is already here, if not, add it
+    address = Address.query.filter_by(standard_address=standard_address, 
+              apartment=apartment).first()
+    if not address:
+        new_address =  Address(standard_address=standard_address, latitude=latitude, 
+                       longitude=longitude, apartment=apartment)
+        db.session.add(new_address)
+        db.session.commit()
     user = User.query.filter_by(email=session["user_id"]).first()
     user.address = address.address_id
     db.session.commit()
     return redirect("/")
-
-
-
-    # admin = User.query.filter_by(username='admin').first()
-    # admin.email = 'my_new_email@example.com'
-    # db.session.commit()
-    # return render_template ("joinhousehold.html", standard_address=standard_address)
-
 
 @app.route('/accept_address')
 def accept_address():
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
 
-
-    # add address to their username/addressdb in db
-
-
-
-
-    #     rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
-
-    # if rating:
-    #     rating.score = score
-    #     flash("Rating updated.")
-
-
-
-
-
-
-@app.route('/newchore', methods=['GET'])
+@app.route('/createchore')
 def createchore():
     """Create a new task for your household"""
     return render_template("createchore.html")
 
-@app.route('/newchore', methods=['POST'])
+@app.route('/createchore', methods=['POST'])
 def newchore():
     """Process new chore"""
+    request.get(name, allow_multiple=True)
+    
     return redirect("/")
 
 @app.route('/acceptchore')
