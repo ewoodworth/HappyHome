@@ -7,6 +7,8 @@ from model import connect_to_db, db, User, Address, Chore, UserChores
 
 import requests
 
+import random
+
 
 app = Flask(__name__)
 
@@ -17,6 +19,16 @@ app.secret_key = "S33KR1T"
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 app.jinja_env.auto_reload=True
+
+
+def genkey(n):
+    """Generate a pseudorandom n-digit key"""
+    randkey=""
+    seedstring="01234567890!@#$%^&*()_+~{}|:<>?QWERTYUIOPASDFGHJKLZXCVNBM<>qwertyuiopasdfhgjklzxcvbnm"
+    for i in range(n):
+        rando = random.choice(seedstring)
+        randkey = randkey+rando
+    return randkey
 
 @app.route('/')
 def index():
@@ -69,7 +81,7 @@ def newuser():
     db.session.add(new_user)
     db.session.commit()
 
-    return redirect("/process_address")
+    return redirect("/add_address")
 
 @app.route('/add_address')
 def new_address():
@@ -79,15 +91,16 @@ def new_address():
 @app.route('/process_address', methods=['POST'])
 def process_address():
     """Add address to user account"""
-    # Get form variables
-    address = request.form.get["address"]
-    #prep address for inclusion in API query
-    address = address.replace(" ", "+")
-    apartment = request.form.get["apartment"]
-    city =  request.form.get["city"]
-    state =  request.form.get["state"]
-    zipcode = request.form.get["zipcode"]
+                                        # Get form variables
+                                        # address = request.form.get["address"]
+    #prep address for inclusion in API query                    
+    
+                                        # apartment = request.form.get["apartment"]
+                                        # city =  request.form.get["city"]
+                                        # state =  request.form.get["state"]
+                                        # zipcode = request.form.get["zipcode"]
     #concatenate user input for API query
+    address = address.replace(" ", "+")
     geocode_string = address +"+"+ city +"+"+ state +"+"+ zipcode
     google_key = os.environ['GOOGLE_GEOCODING_KEY']
     #Make google give me a JSON object
@@ -95,19 +108,37 @@ def process_address():
     "https://maps.googleapis.com/maps/api/geocode/json?address="+new_address+"&key="+google_key)
     address_json = r.json()
     #parse JSON for latitutde and longitude
-    standard_address = address_json[u'results'][0][u'formatted_address']
-    #If needed later there are smaller pixels of address data in the JSON objects
+    #Should I put these into the Global Scope to get everything where it needs to be?
     latitude = address_json[u'results'][0][u'geometry'][u'location'][u'lat']
     longitude = address_json[u'results'][0][u'geometry'][u'location'][u'lng']
+    standard_address = address_json[u'results'][0][u'formatted_address']
+    #If needed later there are smaller pixels of address data in the JSON objects
+    #if standard addresses 
+    #COMPARE LAT AND LONG TO DATABASE, FIRST USER GETS CODE AND LINK TO ADD HOUSEMATES
+    return standard_address
 
 
-    ## SEEK THAT ADDRESS IN DB
-    ## IF FOUND VERIFY W/USER
-    ## USER SAYS YES OR VERIFY
-    return redirect("/")
+@app.route('/accept_address')
+def accept_address():
+    user_id = session["user_id"]
+    user = User.query.filter_by(email=user_id).first()
 
-@app.route CONFIRM ADDRESS
-@app.route FAIL CONFIRMATION
+
+    # add address to their username/addressdb in db
+
+
+
+
+    #     rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+
+    # if rating:
+    #     rating.score = score
+    #     flash("Rating updated.")
+
+
+
+
+
 
 @app.route('/newchore', methods=['GET'])
 def createchore():

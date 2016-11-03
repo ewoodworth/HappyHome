@@ -43,9 +43,9 @@ class Address(db.Model):
     city = db.Column(db.String(35), nullable=False)
     state = db.Column(db.String(2), nullable=False)
     zipcode = db.Column(db.String(5), nullable=False)
-    
-    latitude
-    longitude
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    standard_address = db.Column(db.String(150), nullable=True)
 
 
     def __repr__(self):
