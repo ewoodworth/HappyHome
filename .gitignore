@@ -3,3 +3,9 @@ secrets
 *.pyc
 grayscalebase.png
 .DS_Store
+secrets.sh
+playson.py
+sample.json
+samplepage.html
+TTD
+key.py

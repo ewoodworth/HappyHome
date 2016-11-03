@@ -9,6 +9,8 @@ import requests
 
 import random
 
+import os
+
 
 app = Flask(__name__)
 
@@ -94,18 +96,19 @@ def process_address():
                                         # Get form variables
                                         # address = request.form.get["address"]
     #prep address for inclusion in API query                    
-    
-                                        # apartment = request.form.get["apartment"]
-                                        # city =  request.form.get["city"]
-                                        # state =  request.form.get["state"]
-                                        # zipcode = request.form.get["zipcode"]
+    address = request.form.get("address")
+    apartment = request.form.get("apartment")
+    city =  request.form.get("city")
+    state =  request.form.get("state")
+    zipcode = request.form.get("zipcode")
     #concatenate user input for API query
     address = address.replace(" ", "+")
+    #This ^ needs to happen in JS elsewhere
     geocode_string = address +"+"+ city +"+"+ state +"+"+ zipcode
-    google_key = os.environ['GOOGLE_GEOCODING_KEY']
+    google_key = os.environ['GOOGLE_MAPS_GEOCODING']
     #Make google give me a JSON object
     r = requests.get(
-    "https://maps.googleapis.com/maps/api/geocode/json?address="+new_address+"&key="+google_key)
+    "https://maps.googleapis.com/maps/api/geocode/json?address="+geocode_string+"&key="+google_key)
     address_json = r.json()
     #parse JSON for latitutde and longitude
     #Should I put these into the Global Scope to get everything where it needs to be?

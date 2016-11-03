@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="https://code.jquery.com/jquery.js"></script>
+<script>
+  "use strict";
+    var formInputs = {
+        "address": $("#address").val(),
+        "apartment": $("#apartment").val(),
+        "city": $("#city").val(),
+        "state": $("#state").val(),
+        "zipcode": $("#zipcode").val()
+    };
+
+  function noAddress() {   
+    $.post('/add_address', {confirm:False})    
+  }
+
+  function yesAddress() {   
+    $.post('/accept_address', {confirm:True}, whereGoesWhatComes)    
+  }
+
+  function confirmAddress() {
+    $("#confirmaddress").append("Please confirm that you live at:\n"+standard_address<br>
+        <input type="submit" id="confirmaddress" value="Yes">
+        <input type="submit" id="noconfirm" value="No">).show();
+  }
+      $("#confirmAddress").on("click", function () { yesAddress;});
+      $("#noconfirm").on("click", {confirm:False}, function () { noAddress;});
+
+  function sendDetails(evt) {
+    // go get standard address from python
+    evt.preventDefault();
+    $.post('/process_address', formInputs, confirmAddress())    
+  }
+
+
+  $("#address_button").on("click", function () { sendDetails();});
+</script>
+{% endblock %}
+
+
+{% block body %}
+    THIS IS A FORM TO add address info to a user
+    <div>
+        <form action="/process_address" method="POST">
+            <input type="text" id= "address" name="address" placeholder="Street Address">
+            <br>
+            <input type="text" id= "apartment" name="apartment" placeholder="#">
+            <br>
+            <input type="text" id= "city" name="city" placeholder="City" required><br>
+            <input type="text" id= "state" name="state" placeholder="State" required>
+            <br>
+            <input type="text" id= "zipcode" name="zipcode" placeholder="ZIP" required>
+            <br>
+            <input type="submit" id="address_button" value="Add Address">
+        </form>
+    </div>
+    <div id="confirmaddress" type=hidden>
+    </div>
+{% endblock %}
+
+
