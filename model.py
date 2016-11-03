@@ -38,11 +38,11 @@ class Address(db.Model):
     __tablename__ = "addresses"
 
     address_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    address = db.Column(db.String(100), nullable=False)
+    # address = db.Column(db.String(100), nullable=False)
     apartment = db.Column(db.String(6), nullable=True)
-    city = db.Column(db.String(35), nullable=False)
-    state = db.Column(db.String(2), nullable=False)
-    zipcode = db.Column(db.String(5), nullable=False)
+    # city = db.Column(db.String(35), nullable=False)
+    # state = db.Column(db.String(2), nullable=False)
+    # zipcode = db.Column(db.String(5), nullable=False)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     standard_address = db.Column(db.String(150), nullable=True)

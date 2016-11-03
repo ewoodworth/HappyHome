@@ -118,7 +118,24 @@ def process_address():
     #If needed later there are smaller pixels of address data in the JSON objects
     #if standard addresses 
     #COMPARE LAT AND LONG TO DATABASE, FIRST USER GETS CODE AND LINK TO ADD HOUSEMATES
-    return standard_address
+    new_address =  Address(standard_address=standard_address, latitude=latitude, 
+                   longitude=longitude, apartment=apartment)
+
+    db.session.add(new_address)
+    db.session.commit()
+
+    address = Address.query.filter_by(standard_address=standard_address).first()
+    user = User.query.filter_by(email=session["user_id"]).first()
+    user.address = address.address_id
+    db.session.commit()
+    return redirect("/")
+
+
+
+    # admin = User.query.filter_by(username='admin').first()
+    # admin.email = 'my_new_email@example.com'
+    # db.session.commit()
+    # return render_template ("joinhousehold.html", standard_address=standard_address)
 
 
 @app.route('/accept_address')

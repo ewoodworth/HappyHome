@@ -1,41 +1,40 @@
 {% extends 'base.html' %}
 {% block head %}
 <script src="https://code.jquery.com/jquery.js"></script>
-<script>
-  "use strict";
-    var formInputs = {
-        "address": $("#address").val(),
-        "apartment": $("#apartment").val(),
-        "city": $("#city").val(),
-        "state": $("#state").val(),
-        "zipcode": $("#zipcode").val()
-    };
+// <script>
+//   "use strict";
+//     var formInputs = {
+//         "address": $("#address").val(),
+//         "apartment": $("#apartment").val(),
+//         "city": $("#city").val(),
+//         "state": $("#state").val(),
+//         "zipcode": $("#zipcode").val()
+//     };
 
-  function noAddress() {   
-    $.post('/add_address', {confirm:False})    
-  }
+//   function noAddress() {   
+//     $.post('/add_address', {confirm:False})    
+//   }
 
-  function yesAddress() {   
-    $.post('/accept_address', {confirm:True}, whereGoesWhatComes)    
-  }
+//   function yesAddress() {   
+//     $.post('/accept_address', {confirm:True}, whereGoesWhatComes)    
+//   }
 
-  function confirmAddress() {
-    $("#confirmaddress").append("Please confirm that you live at:\n"+standard_address<br>
-        <input type="submit" id="confirmaddress" value="Yes">
-        <input type="submit" id="noconfirm" value="No">).show();
-  }
-      $("#confirmAddress").on("click", function () { yesAddress;});
-      $("#noconfirm").on("click", {confirm:False}, function () { noAddress;});
+//   function confirmAddress() {
+//     console.log('This statement comes from confirmAddress');
+//     $("#confirmaddress").append("Please confirm that you live at:\n"+standard_address).removeAttr("type");
+//   }
 
-  function sendDetails(evt) {
-    // go get standard address from python
-    evt.preventDefault();
-    $.post('/process_address', formInputs, confirmAddress())    
-  }
+//   function sendDetails(evt) {
+//     // go get standard address from python
+//     // evt.preventDefault();
+//     console.log('This statement comes from sendDetails');
+//     $.post('/process_address', formInputs);    
+//   }
 
-
-  $("#address_button").on("click", function () { sendDetails();});
-</script>
+//   $("#confirmAddress").on("click", function () { yesAddress();});
+//   $("#noconfirm").on("click", {confirm:false}, function () { noAddress();});
+//   $("#address_button").on("click", function () { sendDetails();});
+// </script>
 {% endblock %}
 
 
@@ -55,7 +54,10 @@
             <input type="submit" id="address_button" value="Add Address">
         </form>
     </div>
-    <div id="confirmaddress" type=hidden>
+    <div id="confirmaddress" type="hidden">
+      <br>
+        <input type="submit" id="confirmaddress" value="Yes">
+        <input type="submit" id="noconfirm" value="No">
     </div>
 {% endblock %}
 
