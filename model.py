@@ -62,8 +62,9 @@ class Chore(db.Model):
     chore_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(150), nullable=False)
-    duration = db.Column(db.String(20), nullable=False)
+    duration_minutes = db.Column(db.String(20), nullable=False)
     frequency = db.Column(db.String(30), nullable=False)
+    by_time = db.Column(db.String(30), nullable=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -71,7 +72,7 @@ class Chore(db.Model):
         return "<Chore chore_id=%s name=%s>" % (self.chore_id, self.name)
 
 
-class UserChores(db.Model):
+class Userchore(db.Model):
     """Association table for users and chores."""
 
     __tablename__ = "userchores"
@@ -80,6 +81,8 @@ class UserChores(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
               nullable=False)
     task_id = db.Column(db.Integer, db.ForeignKey('chores.chore_id'), 
+              nullable=False)
+    address_id= db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     commitment = db.Column(db.String(50), nullable=False)

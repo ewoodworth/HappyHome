@@ -3,7 +3,7 @@ from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, User, Address, Chore, UserChores
+from model import connect_to_db, db, User, Address, Chore, Userchore
 
 import requests
 
@@ -115,7 +115,7 @@ def process_address():
     address = Address.query.filter_by(standard_address=standard_address, 
               apartment=apartment).first()
     if not address:
-        new_address =  Address(standard_address=standard_address, latitude=latitude, 
+        address =  Address(standard_address=standard_address, latitude=latitude, 
                        longitude=longitude, apartment=apartment)
         db.session.add(new_address)
         db.session.commit()
@@ -129,16 +129,51 @@ def accept_address():
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
 
-@app.route('/createchore')
+@app.route('/newchore')
 def createchore():
     """Create a new task for your household"""
-    return render_template("createchore.html")
+    return render_template("newchore.html")
 
-@app.route('/createchore', methods=['POST'])
+@app.route('/newchore', methods=['POST'])
 def newchore():
     """Process new chore"""
-    request.get(name, allow_multiple=True)
-    
+    name = request.form.get("chore_name")
+    description = request.form.get("chore_description")
+    duration_hours = request.form.get("duration_hours")
+    duration_minutes = request.form.get("duration_minutes")
+    #Are these conditionals the best way to deal with null/None in form data?
+    if duration_hours:
+        duration_minutes = (int(duration_hours) * 60 + int(duration_minutes))
+    else:
+        duration_minutes = int(duration_minutes)
+    everyday = request.form.get("everyday")
+    dayofweek = request.form.get("dayofweek")
+    date = request.form.get("date")
+    if everyday:
+        frequency = "daily"
+    elif dayofweek:
+        frequency = dayofweek
+    elif date:
+        frequency = "monthly "+date
+    by_hour = request.form.get("by_hour")
+    by_min = request.form.get("by_min")
+    ampm = request.form.get("ampm")
+    by_time = ""
+    #^This may come back to bite me!!!
+    if ampm:
+        by_time = ampm
+    if by_min:
+        by_time = by_min + by_time
+    if by_hour:
+        by_time = by_hour + by_time
+    #Sooo... what if I slip a string field in postgres, an integer. Whose typing wins?
+    new_chore =  Chore(name=name, description=description, duration_minutes=duration_minutes, 
+                 frequency=frequency , by_time = by_time)
+    db.session.add(new_chore)
+    db.session.commit()
+    user = User.query.filter_by(email=session["user_id"]).first()
+    new_userchore = Userchore(user_id=user.user_id, address_id=user.address, task_id=new_chore.chore_id)
+
     return redirect("/")
 
 @app.route('/acceptchore')
