@@ -5,13 +5,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, Userchore
 
-
-
-import random
-
-import os
-
 import dbwrangler
+
+import apiapijoyjoy
 
 
 app = Flask(__name__)
@@ -121,38 +117,24 @@ def newchore():
     everyday = request.form.get("everyday")
     dayofweek = request.form.get("dayofweek")
     date = request.form.get("date")
-    if everyday:
-        frequency = "daily"
-    elif dayofweek:
-        frequency = dayofweek
-    elif date:
-        frequency = "monthly "+date
-    by_hour = request.form.get("by_hour")
-    by_min = request.form.get("by_min")
-    ampm = request.form.get("ampm")
-    by_time = ""
-    #^This may come back to bite me!!!
-    #Number these types. Maybe.
-    by_time = by_hour + by_min + ampm
-    #Sooo... what if I slip a string field in postgres, an integer. Whose typing wins?
-    new_chore =  Chore(name=name, 
-                 description=description, 
-                 duration_minutes=duration_minutes, 
-                 frequency=frequency, 
-                 by_time = by_time)
-    db.session.add(new_chore)
-    db.session.commit()
-    user = User.query.filter_by(email=session["user_id"]).first()
-    new_userchore = Userchore(user_id=user.user_id, address_id=user.address, 
-                    task_id=new_chore.chore_id)
-    db.session.add(new_userchore)
-    db.session.commit()
+    chore_list = #CHORE DATA HERE
+
+    dbwrangler.newchore(chore_list)
+    
     return redirect("/")
 
 @app.route('/acceptchore')
 def claimchore():
     """Claim responsibility for a chore"""
     return render_template("claimchore.html")
+
+@app.route('/logout')
+def logout():
+    """Log out."""
+
+    del session["user_id"]
+    flash("Logged Out.")
+    return redirect("/")
 
 
 #things to paste later

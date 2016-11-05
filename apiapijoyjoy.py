@@ -1,4 +1,5 @@
 import requests
+import os
 
 def validate_address(address, apartment="", city, state, zipcode):
     address = "+".join(address, apartment, city, state, zipcode)
