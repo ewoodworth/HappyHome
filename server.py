@@ -5,11 +5,13 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, Userchore
 
-import requests
+
 
 import random
 
 import os
+
+import dbwrangler
 
 
 app = Flask(__name__)
@@ -21,16 +23,6 @@ app.secret_key = "S33KR1T"
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 app.jinja_env.auto_reload=True
-
-
-def genkey(n):
-    """Generate a pseudorandom n-digit key"""
-    randkey=""
-    seedstring="01234567890!@#$%^&*()_+~{}|:<>?QWERTYUIOPASDFGHJKLZXCVNBM<>qwertyuiopasdfhgjklzxcvbnm"
-    for i in range(n):
-        rando = random.choice(seedstring)
-        randkey = randkey+rando
-    return randkey
 
 @app.route('/')
 def index():
@@ -92,36 +84,17 @@ def new_address():
 
 @app.route('/process_address', methods=['POST'])
 def process_address():
-    """Add address to user account"""
-    #prep address for inclusion in API query                    
+    """Add address to user account"""                
     address = request.form.get("address")
     apartment = request.form.get("apartment")
     city =  request.form.get("city")
     state =  request.form.get("state")
     zipcode = request.form.get("zipcode")
-    #concatenate user input for API query
-    address = address.replace(" ", "+")
-    geocode_string = address +"+"+ city +"+"+ state +"+"+ zipcode
-    google_key = os.environ['GOOGLE_MAPS_GEOCODING']
-    #Make google give me a JSON object
-    r = requests.get(
-    "https://maps.googleapis.com/maps/api/geocode/json?address="+geocode_string+"&key="+google_key)
-    address_json = r.json()
-    #parse JSON for latitutde and longitude
-    latitude = address_json[u'results'][0][u'geometry'][u'location'][u'lat']
-    longitude = address_json[u'results'][0][u'geometry'][u'location'][u'lng']
-    standard_address = address_json[u'results'][0][u'formatted_address']
-    #See if the address is already here, if not, add it
-    address = Address.query.filter_by(standard_address=standard_address, 
-              apartment=apartment).first()
-    if not address:
-        address =  Address(standard_address=standard_address, latitude=latitude, 
-                       longitude=longitude, apartment=apartment)
-        db.session.add(new_address)
-        db.session.commit()
-    user = User.query.filter_by(email=session["user_id"]).first()
-    user.address = address.address_id
-    db.session.commit()
+    
+    apiapijoyjoy.validate_address(address, apartment, city, state, zipcode)
+    #this^ returns address_list
+    dbwrangler.newaddress(address_list)
+    
     return redirect("/")
 
 @app.route('/accept_address')
@@ -132,20 +105,19 @@ def accept_address():
 @app.route('/newchore')
 def createchore():
     """Create a new task for your household"""
-    return render_template("newchore.html")
+    days_list = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa']
+    return render_template("newchore.html", days_list=days_list)
 
 @app.route('/newchore', methods=['POST'])
 def newchore():
     """Process new chore"""
     name = request.form.get("chore_name")
     description = request.form.get("chore_description")
-    duration_hours = request.form.get("duration_hours")
-    duration_minutes = request.form.get("duration_minutes")
+    duration_hours = request.form.get("duration_hours") or 0
+    duration_minutes = request.form.get("duration_minutes") or 0
     #Are these conditionals the best way to deal with null/None in form data?
-    if duration_hours:
-        duration_minutes = (int(duration_hours) * 60 + int(duration_minutes))
-    else:
-        duration_minutes = int(duration_minutes)
+    duration_minutes = (int(duration_hours) * 60 + int(duration_minutes))
+    #TTD FORCE USER TO ANSWER ONE OF THE FOLLOWING THINGS
     everyday = request.form.get("everyday")
     dayofweek = request.form.get("dayofweek")
     date = request.form.get("date")
@@ -160,20 +132,21 @@ def newchore():
     ampm = request.form.get("ampm")
     by_time = ""
     #^This may come back to bite me!!!
-    if ampm:
-        by_time = ampm
-    if by_min:
-        by_time = by_min + by_time
-    if by_hour:
-        by_time = by_hour + by_time
+    #Number these types. Maybe.
+    by_time = by_hour + by_min + ampm
     #Sooo... what if I slip a string field in postgres, an integer. Whose typing wins?
-    new_chore =  Chore(name=name, description=description, duration_minutes=duration_minutes, 
-                 frequency=frequency , by_time = by_time)
+    new_chore =  Chore(name=name, 
+                 description=description, 
+                 duration_minutes=duration_minutes, 
+                 frequency=frequency, 
+                 by_time = by_time)
     db.session.add(new_chore)
     db.session.commit()
     user = User.query.filter_by(email=session["user_id"]).first()
-    new_userchore = Userchore(user_id=user.user_id, address_id=user.address, task_id=new_chore.chore_id)
-
+    new_userchore = Userchore(user_id=user.user_id, address_id=user.address, 
+                    task_id=new_chore.chore_id)
+    db.session.add(new_userchore)
+    db.session.commit()
     return redirect("/")
 
 @app.route('/acceptchore')

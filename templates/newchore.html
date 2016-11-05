@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block body %}
+    THIS IS A FORM TO CREATE CHORES
+    <form action="/newchore" method="POST">
+        <input type="text" name="chore_name" placeholder="Title" required>
+        <br>
+        <input type="text" name="chore_description" placeholder="Descriuption" required>
+        <br>
+        This usually takes:
+        <br>
+        <input type="text" name="duration_hours" placeholder="Hr">
+        <input type="text" name="duration_minutes" placeholder="Min" required>
+        <br> 
+        Frequency:
+        <br>
+        Every Day<input type="checkbox" name="everyday">
+        <br>
+        Weekly On:
+        <input type="checkbox" name="dayofweek" value="0">Su 
+        <input type="checkbox" name="dayofweek" value="1">M 
+        <input type="checkbox" name="dayofweek" value="2">Tu 
+        <input type="checkbox" name="dayofweek" value="3">W 
+        <input type="checkbox" name="dayofweek" value="4">Th 
+        <input type="checkbox" name="dayofweek" value="5">F 
+        <input type="checkbox" name="dayofweek" value="6">Sa
+        <br>
+        Monthly On/By:
+        <br>This needs to be done by day
+        <input type="number" name="date" min="1" max="31"> each month.
+        <br>
+        What time does it need to be done (if any):
+        <br>
+        <input type="radio" name="ampm" value="am">Any time before noon
+        <br>
+        <input type="radio" name="ampm" value="pm">Any time before 10pm
+        <br>
+        <select name="by_hour">
+            <option value="">--</option> 
+            {% for item in range(12) %}
+            <option value={{item+1}}>{{item+1}}</option>
+            {% endfor %}
+        </select>
+        <select name="by_min">
+            <option value="">--</option> 
+            <option value="00">:00</option>
+            <option value="30">:30</option>
+        </select>
+        <input type="radio" name="ampm" value="am">AM
+        <input type="radio" name="ampm" value="pm">PM
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

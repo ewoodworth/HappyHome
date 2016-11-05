@@ -84,8 +84,9 @@ class Userchore(db.Model):
               nullable=False)
     address_id= db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
-    commitment = db.Column(db.String(50), nullable=False)
+    #Consider making default=2.5 rather than nullable
+    rating = db.Column(db.Integer, nullable=True)
+    commitment = db.Column(db.String(50), nullable=True)
 
     # Define relationship to user
     user = db.relationship("User",
@@ -93,6 +94,10 @@ class Userchore(db.Model):
 
     # Define relationship to task
     chore = db.relationship("Chore",
+                            backref=db.backref("userchores", order_by=uc_id))
+
+    # Define relationship to addresses
+    address = db.relationship("Address",
                             backref=db.backref("userchores", order_by=uc_id))
 
     def __repr__(self):
