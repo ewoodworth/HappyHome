@@ -73,6 +73,13 @@ def newuser():
 
     return redirect("/add_address")
 
+@app.route("/users/<int:user_id>")
+def user_profile(user_id):
+    """Show user profile"""
+
+    user = User.query.get(user_id)
+    return render_template("user.html", user=user)
+
 @app.route('/add_address')
 def new_address():
     """Present new address form"""
@@ -87,7 +94,7 @@ def process_address():
     state =  request.form.get("state")
     zipcode = request.form.get("zipcode")
     
-    apiapijoyjoy.validate_address(address, apartment, city, state, zipcode)
+    address_list = apiapijoyjoy.validate_address(address, apartment, city, state, zipcode)
     #this^ returns address_list
     dbwrangler.newaddress(address_list)
     
@@ -111,22 +118,27 @@ def newchore():
     description = request.form.get("chore_description")
     duration_hours = request.form.get("duration_hours") or 0
     duration_minutes = request.form.get("duration_minutes") or 0
-    #Are these conditionals the best way to deal with null/None in form data?
+
     duration_minutes = (int(duration_hours) * 60 + int(duration_minutes))
-    #TTD FORCE USER TO ANSWER ONE OF THE FOLLOWING THINGS
+
     everyday = request.form.get("everyday")
     dayofweek = request.form.get("dayofweek")
     date = request.form.get("date")
-    chore_list = #CHORE DATA HERE
+    #chore_list = CHORE DATA HERE
 
     dbwrangler.newchore(chore_list)
     
     return redirect("/")
 
-@app.route('/acceptchore')
+@app.route('/takeachore')
 def claimchore():
-    """Claim responsibility for a chore"""
-    return render_template("claimchore.html")
+    """Claim a chore"""
+    return render_template("takeachore.html")
+
+@app.route('/upcomingchores')
+def viewchore():
+    """See upcoming chores"""
+    return render_template("upcomingchores.html")
 
 @app.route('/logout')
 def logout():

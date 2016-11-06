@@ -1,13 +1,13 @@
 import requests
 import os
 
-def validate_address(address, apartment="", city, state, zipcode):
-    address = "+".join(address, apartment, city, state, zipcode)
+def validate_address(address, city, state, zipcode, apartment=""):
+    address = "+".join([address, apartment, city, state, zipcode])
     address = address.replace(" ", "+")
     geocode_block = address +"+"+ city +"+"+ state +"+"+ zipcode
     google_key = os.environ['GOOGLE_MAPS_GEOCODING']
 
-    payload = {'address': geocode_block, key: os.environ['GOOGLE_MAPS_GEOCODING']}
+    payload = {'address': geocode_block, 'key': os.environ['GOOGLE_MAPS_GEOCODING']}
     #Make google give me a JSON object
     r = requests.get(
     "https://maps.googleapis.com/maps/api/geocode/json?", params=payload)

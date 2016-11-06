@@ -1,88 +1,101 @@
-<!doctype html>
 <html>
-<head>
-  <title></title>
-    <script src='https://code.jquery.com/jquery.js'></script>
+  <head>
+    <title></title>
+    <!-- jquery; loading here for inline javascript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
-    <script>
-    'use strict';
-        // a general function to update the secondary form element
-    var timeElement = {daily : ['Every Day'],
-                      weekly:['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'],
-                      monthly: ['Once a month']};
+  </head>
+  <body>
+    <div id="color-fam-form-group" class="form-group">
+      <label class="headline-label" for="color-fam-pulldown">
+        How often does this need to be done:
+      </label>
+      <select id="color-fam-pulldown" class="pulldown-width spacey form-control">
+        <option></option>
+        <option value='daily'>daily</option>
+        <option value='weekly'>weekly</option>
+        <option value='monthly'>monthly</option>
+      </select>
+    </div>
+  </div>
+  <br>
+  <div id="color-shade-form-group" class="col-xs-3" style="display:none">
+    <div class="form-group">
+      <label id="color-shade-label" class="headline-label" for="color-shade-pulldown">
+      </label>
+      <select id="color-shade-pulldown" class="pulldown-width spacey form-control">
+      </select>
+    </div>
+  </div>
+  <br>
+  <div id="time-form-group" style="display:none">
+    <div class="form-group">
+      <br> 
+      <input type='radio' name='ampm' value='Any'>Any Time
+      <br>
+      <input type='radio' name='ampm' value='am'>Any time before noon
+      <br>
+      <input type='radio' name='ampm' value='pm'>Any time before 10pm
+      <br>
+      <label id="by-time-label" class="headline-label" for="color-shade-pulldown">
+      Needs to be done by:
+      </label>
+      <input type='time' name='by-time'>
+    </div>
+  </div>
 
-    function addFormOptions(date) {
-      // add the label for this element
-      $('#freq-days-label').html('Which days of the week should this happen?');
-      // get array for the new form element elements
-// ;
-      // get the secondary form div and empty it
-      var secondForm = $('#freq-days-form');
-      secondForm.empty();
+    <script>
+
+    "use strict";
+
+    ////////////////// color family pulldowns ///////////////
+    var colorShades = {daily: ['daily'],
+                       weekly: ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su'],
+                       monthly: ['peacock', 'navy', 'sky']};
+
+    // a general function to update the secondary pulldown
+    function addSecondPullOptions(color) {
+
+      // get array for the new pulldown
+      var shades = colorShades[color];
+
+
+
       // add an option foreach array item
-      for (var i = 0; i < timeElement.length; i++) {
-        secondForm.append('<input type="checkbox" name=' + weekdays[i] + 
-        'value=' + i + '>' + weekdays[i]);
+
+      if ($("#color-fam-pulldown").val() == 'daily') {
+        console.log("Here's something TRUE");
+      } else if ($("#color-fam-pulldown").val() == 'weekly') {
+          // get the secondary pulldown and empty it
+          var secondPull = $("#color-shade-pulldown");
+          secondPull.empty();
+          for (var i = 0; i < shades.length; i++) {
+        secondPull.append("<option>" + shades[i] + "</option>");
+        };
+      $("#color-shade-label").html("Which days does it need to happen?");
+      } else if ($("#color-fam-pulldown").val() == 'monthly') {
+        console.log("DO A MONTHLY THING");
       }
+
       // finally, unhide the second pulldown
-      $('#freq-second-group').show();
+      $('#color-shade-form-group').show();
+      $('#time-form-group').show();
+
     };
 
     // event handler for change to the main color pulldown
-    var mainPull = $('#freq-top'); 
+    var mainPull = $("#color-fam-pulldown"); 
     mainPull.change(function() {
+
       // update the secondary pulldown if there's a color
-      if (mainPull.val() !== '') {
+      if (mainPull.val() !== "") {
         addSecondPullOptions(mainPull.val());
       // otherwise, hide it
       } else {
-        $('#freq-sub-weekly-group').hide();
+        $('#color-shade-form-group').hide();
       }
     });
+
     </script>
-</head>
-<body>
-<!--     <div class='row'>
-      <div class='col-xs-12 center-block' style='float:none'>
-        <div id='color-pulldowns' class='row'>
-          <div class='col-xs-4'></div> spacer column
-          <div class='col-xs-3'> -->
-            <div id='color-fam-form-group' class='form-group'>
-              <label class='headline-label' for='color-fam-pulldown'>
-                Pick a color family:
-              </label>
-              <select id='freq-top' class='pulldown-width spacey form-control'> 
-                <option></option>
-                <option>daily</option>
-                <option>weekly</option>
-                <option>monthly</option>
-              </select>
-            </div>
-       <!--    </div> -->
-<!--           <div class='col-xs-3' > -->
-            <div class='form-group' id='freq-second-group' style='display:none'>
-                <label id='freq-days-label' class='headline-label' 
-                for='color-shade-pulldown'>
-                </label>
-                <select id='freq-days-form' class='pulldown-width spacey form-control'>
-                </select>
-                <select id='time'>
-                  <input type='radio' name='ampm' value='Any'>Any Time
-                  <br
-                  <input type='radio' name='ampm' value='am'>Any time before noon
-                  <br>
-                  <input type='radio' name='ampm' value='pm'>Any time before 10pm
-                  <br>
-                  <input type='time' name='by-time'>
-                  <br>
-                </select>
-            </div>
-<!--           </div> -->
-          <!-- </div>
-        </div>
-      </div>
-    </div> -->
 
-</body>
-</html> 
-
+  </body>
+</html>
