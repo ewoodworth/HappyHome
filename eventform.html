@@ -3,13 +3,13 @@
     <title></title>
     <!-- jquery; loading here for inline javascript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
-  </head>
+   </head>
   <body>
-    <div id="color-fam-form-group" class="form-group">
-      <label class="headline-label" for="color-fam-pulldown">
+    <div id="initial-form-group" class="form-group">
+      <label class="headline-label" for="initial-pulldown">
         How often does this need to be done:
       </label>
-      <select id="color-fam-pulldown" class="pulldown-width spacey form-control">
+      <select id="initial-pulldown" class="pulldown-width spacey form-control">
         <option></option>
         <option value='daily'>daily</option>
         <option value='weekly'>weekly</option>
@@ -18,80 +18,75 @@
     </div>
   </div>
   <br>
-  <div id="color-shade-form-group" class="col-xs-3" style="display:none">
+  <div id="secondary-form-group" style="display:none">
     <div class="form-group">
-      <label id="color-shade-label" class="headline-label" for="color-shade-pulldown">
+      <label id="secondary-label" class="headline-label" for="secondary-element">
       </label>
-      <select id="color-shade-pulldown" class="pulldown-width spacey form-control">
-      </select>
+      <div id="secondary-element">
+      </div>
     </div>
   </div>
   <br>
   <div id="time-form-group" style="display:none">
     <div class="form-group">
+      <label id="by-time-label" for="by-time">
+      This chore needs to happen at:
+      </label>
       <br> 
-      <input type='radio' name='ampm' value='Any'>Any Time
+      <input type='radio' name='ampm' value='Any' checked='checked'>Any Time
       <br>
       <input type='radio' name='ampm' value='am'>Any time before noon
       <br>
       <input type='radio' name='ampm' value='pm'>Any time before 10pm
       <br>
-      <label id="by-time-label" class="headline-label" for="color-shade-pulldown">
-      Needs to be done by:
+      <label id="by-time-label" for="by-time">
+      This time:
       </label>
       <input type='time' name='by-time'>
     </div>
   </div>
 
     <script>
-
     "use strict";
-
-    ////////////////// color family pulldowns ///////////////
-    var colorShades = {daily: ['daily'],
-                       weekly: ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su'],
-                       monthly: ['peacock', 'navy', 'sky']};
-
     // a general function to update the secondary pulldown
-    function addSecondPullOptions(color) {
+    function addsecondElementOptions(color) {
 
-      // get array for the new pulldown
-      var shades = colorShades[color];
+      // get array for days of the week
+      var dow = ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su'];
 
+      // get the secondary pulldown and empty it
+      var secondElement = $("#secondary-element");
+      secondElement.empty();
+      $("#secondary-label").html("");
 
-
-      // add an option foreach array item
-
-      if ($("#color-fam-pulldown").val() == 'daily') {
+      // add an option foreach possibility in form-initial
+      if ($("#initial-pulldown").val() == 'daily') {
         console.log("Here's something TRUE");
-      } else if ($("#color-fam-pulldown").val() == 'weekly') {
-          // get the secondary pulldown and empty it
-          var secondPull = $("#color-shade-pulldown");
-          secondPull.empty();
-          for (var i = 0; i < shades.length; i++) {
-        secondPull.append("<option>" + shades[i] + "</option>");
+      } else if ($("#initial-pulldown").val() == 'weekly') {
+          for (var i = 0; i < dow.length; i++) {
+        secondElement.append(" <input type='checkbox' name=" + dow[i] + " value=" + i + ">" + dow[i]);
         };
-      $("#color-shade-label").html("Which days does it need to happen?");
-      } else if ($("#color-fam-pulldown").val() == 'monthly') {
-        console.log("DO A MONTHLY THING");
+      $("#secondary-label").html("Which days does it need to happen?");
+      } else if ($("#initial-pulldown").val() == 'monthly') {
+        secondElement.append("By day <input type='number' name='by_date' min='1' max='31'> of the month.");
       }
 
       // finally, unhide the second pulldown
-      $('#color-shade-form-group').show();
+      $('#secondary-form-group').show();
       $('#time-form-group').show();
 
     };
 
-    // event handler for change to the main color pulldown
-    var mainPull = $("#color-fam-pulldown"); 
+    // event handler for change to the main pulldown
+    var mainPull = $("#initial-pulldown"); 
     mainPull.change(function() {
 
-      // update the secondary pulldown if there's a color
+      // update the secondary pulldown if there's a value
       if (mainPull.val() !== "") {
-        addSecondPullOptions(mainPull.val());
+        addsecondElementOptions(mainPull.val());
       // otherwise, hide it
       } else {
-        $('#color-shade-form-group').hide();
+        $('#secondary-form-group').hide();
       }
     });
 
