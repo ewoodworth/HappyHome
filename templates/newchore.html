@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+{% endblock %}
 {% block body %}
-    THIS IS A FORM TO CREATE CHORES
     <form action="/newchore" method="POST">
         <input type="text" name="chore_name" placeholder="Title" required>
         <br>
@@ -12,42 +14,90 @@
         <input type="text" name="duration_minutes" placeholder="Min" required>
         <br> 
         Frequency:
-        <br>
-        Every Day<input type="checkbox" name="everyday">
-        <br>
-        Weekly On:
-        <input type="checkbox" name="dayofweek" value="0">Su 
-        <input type="checkbox" name="dayofweek" value="1">M 
-        <input type="checkbox" name="dayofweek" value="2">Tu 
-        <input type="checkbox" name="dayofweek" value="3">W 
-        <input type="checkbox" name="dayofweek" value="4">Th 
-        <input type="checkbox" name="dayofweek" value="5">F 
-        <input type="checkbox" name="dayofweek" value="6">Sa
-        <br>
-        Monthly On/By:
-        <br>This needs to be done by day
-        <input type="number" name="date" min="1" max="31"> each month.
-        <br>
-        What time does it need to be done (if any):
-        <br>
-        <input type="radio" name="ampm" value="am">Any time before noon
-        <br>
-        <input type="radio" name="ampm" value="pm">Any time before 10pm
-        <br>
-        <select name="by_hour">
-            <option value="">--</option> 
-            {% for item in range(12) %}
-            <option value={{item+1}}>{{item+1}}</option>
-            {% endfor %}
-        </select>
-        <select name="by_min">
-            <option value="">--</option> 
-            <option value="00">:00</option>
-            <option value="30">:30</option>
-        </select>
-        <input type="radio" name="ampm" value="am">AM
-        <input type="radio" name="ampm" value="pm">PM
-        <br>
-        <input type="submit" value="Submit">
+        <div id="initial-form-group" class="form-group">
+          <label class="headline-label" for="initial-pulldown">
+            How often does this need to be done:
+          </label>
+          <select id="initial-pulldown" class="pulldown-width spacey form-control" name="freq">
+            <option></option>
+            <option value='daily'>daily</option>
+            <option value='weekly'>weekly</option>
+            <option value='monthly'>monthly</option>
+          </select>
+        </div>
+      </div>
+      <br>
+      <div id="secondary-form-group" style="display:none">
+        <div class="form-group">
+          <label id="secondary-label" class="headline-label" for="secondary-element">
+          </label>
+          <div id="secondary-element">
+          </div>
+        </div>
+      </div>
+      <br>
+      <div id="time-form-group" style="display:none">
+        <div class="form-group">
+          <label id="by-time-label" for="by-time">
+          This chore needs to happen at:
+          </label>
+          <br> 
+          <input type='radio' name='ampm' value='Any' checked='checked'>Any Time
+          <br>
+          <input type='radio' name='ampm' value='am'>Any time before noon
+          <br>
+          <input type='radio' name='ampm' value='pm'>Any time before 10pm
+          <br>
+          <label id="by-time-label" for="by-time">
+          This time:
+          </label>
+          <input type='time' name='by-time'>
+        </div>
+      </div>
+      <input type="submit" value="Submit">
     </form>
+    <script>
+    "use strict";
+    // a general function to update the secondary pulldown
+    function addsecondElementOptions(color) {
+
+      // get array for days of the week
+      var dow = ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su'];
+
+      // get the secondary pulldown and empty it
+      var secondElement = $("#secondary-element");
+      secondElement.empty();
+      $("#secondary-label").html("");
+
+      // add an option foreach possibility in form-initial
+      if ($("#initial-pulldown").val() == 'daily') {
+        console.log("Here's something TRUE");
+      } else if ($("#initial-pulldown").val() == 'weekly') {
+          for (var i = 0; i < dow.length; i++) {
+        secondElement.append(" <input type='checkbox' name='days' value=" + i + ">" + dow[i]);
+        };
+      $("#secondary-label").html("Which days does it need to happen?");
+      } else if ($("#initial-pulldown").val() == 'monthly') {
+        secondElement.append("By day <input type='number' name='by_date' min='1' max='31'> of the month.");
+      }
+
+      // finally, unhide the second pulldown
+      $('#secondary-form-group').show();
+      $('#time-form-group').show();
+
+    };
+
+    // event handler for change to the main pulldown
+    var mainPull = $("#initial-pulldown"); 
+    mainPull.change(function() {
+
+      // update the secondary pulldown if there's a value
+      if (mainPull.val() !== "") {
+        addsecondElementOptions(mainPull.val());
+      // otherwise, hide it
+      } else {
+        $('#secondary-form-group').hide();
+      }
+    });
+    </script>
 {% endblock %}

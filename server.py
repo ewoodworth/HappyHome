@@ -114,20 +114,26 @@ def createchore():
 @app.route('/newchore', methods=['POST'])
 def newchore():
     """Process new chore"""
-    name = request.form.get("chore_name")
-    description = request.form.get("chore_description")
-    duration_hours = request.form.get("duration_hours") or 0
-    duration_minutes = request.form.get("duration_minutes") or 0
-
+    name = request.form.get('chore_name')
+    description = request.form.get('chore_description')
+    duration_hours = request.form.get('duration_hours') or 0
+    duration_minutes = request.form.get('duration_minutes') or 0
+    #compse duration in minutes
     duration_minutes = (int(duration_hours) * 60 + int(duration_minutes))
+    freq = request.form.get('freq')
+    print freq
+    ampm = request.form.get('ampm') or '0'
+    by_time = request.form.get('by-time') or '0'
+    on_days = request.form.get('days') or '0'
+    # ^ Confirm multi-day behavior in SQL
+    by_date = request.form.get('by_date') or '0'
 
-    everyday = request.form.get("everyday")
-    dayofweek = request.form.get("dayofweek")
-    date = request.form.get("date")
-    #chore_list = CHORE DATA HERE
+    freq_contents = (freq, by_time, ampm, on_days, by_date)
+    freq = "|".join(freq_contents)
+    chore_list = [name, description, duration_minutes, freq]
 
     dbwrangler.newchore(chore_list)
-    
+
     return redirect("/")
 
 @app.route('/takeachore')

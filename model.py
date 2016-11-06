@@ -64,7 +64,6 @@ class Chore(db.Model):
     description = db.Column(db.String(150), nullable=False)
     duration_minutes = db.Column(db.String(20), nullable=False)
     frequency = db.Column(db.String(30), nullable=False)
-    by_time = db.Column(db.String(30), nullable=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
