@@ -1,0 +1,6 @@
+{% extends 'dashboard.html' %}
+{% block body %}TASKS
+    {% for chore in chores %}
+        <br>{{ chore.name }}{{ chore.frequency[0]}}
+    {% endfor %}
+{% endblock %}

@@ -71,14 +71,13 @@
 
       // add an option foreach possibility in form-initial
       if ($("#initial-pulldown").val() == 'daily') {
-        console.log("Here's something TRUE");
       } else if ($("#initial-pulldown").val() == 'weekly') {
           for (var i = 0; i < dow.length; i++) {
         secondElement.append(" <input type='checkbox' name='days' value=" + i + ">" + dow[i]);
         };
       $("#secondary-label").html("Which days does it need to happen?");
       } else if ($("#initial-pulldown").val() == 'monthly') {
-        secondElement.append("By day <input type='number' name='by_date' min='1' max='31'> of the month.");
+        secondElement.append("By day <input type='number' name='days' min='1' max='31'> of the month.");
       }
 
       // finally, unhide the second pulldown

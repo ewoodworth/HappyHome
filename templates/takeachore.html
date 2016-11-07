@@ -1,0 +1,37 @@
+{% extends 'dashboard.html' %}
+{% block body %}TASKS
+<form action="/acceptchore" method='POST'>
+<div class="well spaced" style="width:50%;">
+  <h2>Available Chores:</h2>
+  <ul>
+  {% for chore in chores %}
+    <li>
+      <a href="#" data-toggle="popover" title="Popover Header" data-content="{{chore.description}}">{{ chore.name }}</a> 
+      (chore.frequency)-(userchore.chore_id)    (Days That The Thing Needs Doing)(Days other people have volunteered to do it)(What's left)
+    </li>
+  {% endfor %}
+  {{ play_variable }} 
+  {% for userchore in userchores %}
+  {% if userchore.user_id == user.user_id %}
+  {{ userchore.uc_id }}
+  {% endif %}
+  {% endfor %}
+  </ul>
+</div>
+</form>
+{% endblock %}
+
+    
+
+<!--         <input type="text" name="" placeholder="" required>
+        <input type="submit" value="Submit"> -->
+    
+
+
+
+
+<script>
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover(); 
+});
+</script>

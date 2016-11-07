@@ -94,7 +94,8 @@ def process_address():
     state =  request.form.get("state")
     zipcode = request.form.get("zipcode")
     
-    address_list = apiapijoyjoy.validate_address(address, apartment, city, state, zipcode)
+    address_list = apiapijoyjoy.validate_address(address, apartment, 
+                   city, state, zipcode)
     #this^ returns address_list
     dbwrangler.newaddress(address_list)
     
@@ -108,8 +109,7 @@ def accept_address():
 @app.route('/newchore')
 def createchore():
     """Create a new task for your household"""
-    days_list = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa']
-    return render_template("newchore.html", days_list=days_list)
+    return render_template("newchore.html")
 
 @app.route('/newchore', methods=['POST'])
 def newchore():
@@ -121,14 +121,14 @@ def newchore():
     #compse duration in minutes
     duration_minutes = (int(duration_hours) * 60 + int(duration_minutes))
     freq = request.form.get('freq')
-    print freq
     ampm = request.form.get('ampm') or '0'
     by_time = request.form.get('by-time') or '0'
-    on_days = request.form.get('days') or '0'
-    # ^ Confirm multi-day behavior in SQL
-    by_date = request.form.get('by_date') or '0'
+    on_days = request.form.getlist('days') or '0'
+    on_days = "".join(on_days)
+    if freq == 'daily':
+        on_days = '0123456'
 
-    freq_contents = (freq, by_time, ampm, on_days, by_date)
+    freq_contents = (freq, on_days, by_time, ampm)
     freq = "|".join(freq_contents)
     chore_list = [name, description, duration_minutes, freq]
 
@@ -136,15 +136,29 @@ def newchore():
 
     return redirect("/")
 
-@app.route('/takeachore')
+@app.route('/takeachore', methods=['GET'])
 def claimchore():
     """Claim a chore"""
-    return render_template("takeachore.html")
+    user_id = session["user_id"]
+    user = User.query.filter_by(email=user_id).first()
+    userchores = Userchore.query.filter_by(address_id=user.address).all()
+    chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
+    #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
+    play_variable = "foo"
+    return render_template("takeachore.html", chores=chores, userchores=userchores, user=user, 
+                           play_variable=play_variable)
 
 @app.route('/upcomingchores')
 def viewchore():
     """See upcoming chores"""
-    return render_template("upcomingchores.html")
+    user_id = session["user_id"]
+    user = User.query.filter_by(email=user_id).first()
+    #return all chores at this address
+
+    userchores = Userchore.query.filter_by(address_id=user.address).all()
+    chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
+    #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
+    return render_template("upcomingchores.html", chores=chores)
 
 @app.route('/logout')
 def logout():
