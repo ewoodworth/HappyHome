@@ -46,7 +46,7 @@ def login():
         return redirect("/login")
 
     flash("Logged in")
-    session["user_id"] = user.user_id  #stores userid pulled from db in session
+    session["user_id"] = user.email  #stores userid pulled from db in session
     return redirect("/")
 
 @app.route('/signup', methods=['GET'])
@@ -136,6 +136,7 @@ def newchore():
 
     return redirect("/")
 
+
 @app.route('/takeachore', methods=['GET'])
 def claimchore():
     """Claim a chore"""
@@ -143,10 +144,12 @@ def claimchore():
     user = User.query.filter_by(email=user_id).first()
     userchores = Userchore.query.filter_by(address_id=user.address).all()
     chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
+    for chore in chores:
+        chore.frequency = chore.frequency.split("|") 
+    #chore.frequency=[d/w/m, numdays, time, any/morning/evening]
+
     #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
-    play_variable = "foo"
-    return render_template("takeachore.html", chores=chores, userchores=userchores, user=user, 
-                           play_variable=play_variable)
+    return render_template("takeachore.html", chores=chores, userchores=userchores, user=user)
 
 @app.route('/upcomingchores')
 def viewchore():
@@ -159,6 +162,23 @@ def viewchore():
     chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
     #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
     return render_template("upcomingchores.html", chores=chores)
+
+@app.route('/takechoreform', methods=['POST'])
+def feedjsboxes():
+    numfromform = request.form.get("numfromform")
+    userchores = Userchore.query.filter_by(task_id=numfromform).all()
+    base_chore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
+    #that's time consuming, actually want to search inside userchores
+    base_chore = Chore.query.filter_by(chore_id=base_chore.chore_id).first()
+    #this will be the chore object for basechore
+    intsleft = base_chore.frequency[1]
+    for chore in userchores:
+            if chore.commitment == 'INIT':
+                pass
+            elif chore.commitment:
+                for item in chore.commitment:
+                    intsleft.replace(item, "")
+    return intsleft
 
 @app.route('/logout')
 def logout():

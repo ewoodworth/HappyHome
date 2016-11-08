@@ -26,6 +26,6 @@ def newchore(chore_list):
     db.session.commit()
     user = User.query.filter_by(email=session["user_id"]).first()
     new_userchore = Userchore(user_id=user.user_id, address_id=user.address, 
-                    task_id=new_chore.chore_id)
+                    task_id=new_chore.chore_id, commitment='INIT')
     db.session.add(new_userchore)
     db.session.commit()
