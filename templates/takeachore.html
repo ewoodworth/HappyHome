@@ -12,44 +12,123 @@
   </select>
 </div>
 <div id='secondary-form-group'>
-
 </div>
-<button>I'M A BUTTON</button>
+<div id='aggree-button-div'>
+</div>
+<div>
+  <table>
+    <tr>
+      <td>
+        Chore
+      </td>
+      <td>
+        Frequency
+      </td>
+      <td>
+        
+      </td>
+      <td>
+      
+      </td>
+    </tr>
     {% for chore in chores %}
-    <br>{{ chore.name }} {{ chore.frequency[1] }}
+    <tr>
+    <td>
+    {{ chore.name }}
+    </td>
+    <td>
+    {% if chore.frequency[0] == 'daily' %}
+      Every day
+    {% elif chore.frequency[0] == 'weekly' %}
+      <label class='days-of-weekly-chore'>Weekly on {{ chore.frequency[1] }}</label>
+    {% elif chore.frequency[0] == 'monthly' %}
+      Monthly on day {{ chore.frequency[1] }} of the month
+    {% endif %}
+    {% if chore.frequency[2] == '0' and chore.frequency[3] == 'ALL' %}
+        at any time of day.
+      {% elif chore.frequency[3] == 'MORNING' %}
+        in the morning.
+      {% elif chore.frequency[3] == 'EVENING' %}
+        in the evening.
+    {% else %}
+      at {{ chore.frequency[2] }}
+    {% endif %}</p>
+    </td>
+    </tr>
     {% endfor %}
+  </table>
+</div>
+    
 
 
 <script>
 "use strict";
-  $(document).ready(function(){
+  $(document).ready(function() {
     console.log("HI!!!");
-    // $('[data-toggle="popover"]').popover(); 
 
-    $("button").click( function() { console.log('WELL THE BUTTON WORKS')})
+    var daysOfTheWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    // $('[data-toggle="popover"]').popover(); 
+    for (var i = (daysOfTheWeek).length - 1; i >= 0; i--) {
+        $('.days-of-weekly-chore').each(function() {
+        var text = $(this).text();
+        $(this).text(text.replace(i, daysOfTheWeek[i]))}); 
+    };
+    // ^I COPIED THIS OFF STACK OVERFLOW. WAT?
 
     // event handler for change to the main pulldown
-    var mainPull = $("#initial-pulldown"); 
+    var mainPull = $("#initial-pulldown");
+
     mainPull.change(function() {
       console.log("I'm awake!");
-      sendFormIn();
+      // sendFormIn();
       // update the secondary menu if there's a value
       if (mainPull.val() !== "") {
         console.log('It Started!');
-        // addsecondElementOptions(mainPull.val());
+        sendFormIn();
       // otherwise, hide it
       } else {
         $('#secondary-form-group').hide();
+        $('aggree-button-div').hide();
       }
     });
 
-    function successFunction(ints){
-      console.log(ints);
+    function agreeToChore(){
+      var agreementsInput = {
+        "daysagreed": $('#day_0-checkbox').is(":checked").toString() + "," +
+                $('#day_1-checkbox').is(":checked").toString() + "," +
+                $('#day_2-checkbox').is(":checked").toString() + "," +
+                $('#day_3-checkbox').is(":checked").toString() + "," +
+                $('#day_4-checkbox').is(":checked").toString() + "," +
+                $('#day_5-checkbox').is(":checked").toString() + "," +
+                $('#day_6-checkbox').is(":checked").toString(),
+        "chore_id": $('#initial-pulldown').val()
+      }
+
+          console.log(agreementsInput);
+
+          $.post("/takeagreements", 
+          agreementsInput,
+          $('#secondary-form-group').empty()
+          );
     }
+    //DO THE OLD RULES FOR FORM ELEMENTS FROM HTML STILL MATTER? NAME VS ID?
+
+    function successFunction(ints){
+      $("#secondary-form-group").empty();
+      for (var i = 0; i < ints.length; i++) {
+        $("#secondary-form-group").append(" <input type='checkbox' id='day_" + ints[i] +"-checkbox' name = 'day' value=" + ints[i] + ">" + daysOfTheWeek[ints[i]][0]);
+        };
+        $("#secondary-form-group").append(" <button id='agree-button'>I'll Do This!</button>")
+            $("#agree-button").click(function() { 
+                               agreeToChore();});
+    }
+
+      $('#secondary-form-group').show();
 
     function sendFormIn() {
         // evt.preventDefault();
-
+        // HOW LONG DO VARIABLES HOLD SCOPE IN JS????
+        // CAN I JUST USE THIS FUNCTION AGAIN ON LINE 45 AND ADD MORE ITEMS TO THE JSON (OBV WON'T USE THEM BOTH TIMES) <- No, wrong route
         var formInputs = {
           "numfromform": $("#initial-pulldown").val()
         }
@@ -59,7 +138,8 @@
             successFunction
             );
     }
+
   });
-// THIS IS FROM THE DOCUMT READY TAG AT THE TOP
+// ^ THIS IS FROM THE DOCUMT READY TAG AT THE TOP
 </script>
 {% endblock %}

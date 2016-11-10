@@ -25,6 +25,9 @@ class User(db.Model):
     phone_number = db.Column(db.String(15), nullable=False)
     address = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=True)
+    chores = db.relationship("Chore",
+                         secondary="userchores",
+                         backref="users")
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -38,11 +41,7 @@ class Address(db.Model):
     __tablename__ = "addresses"
 
     address_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    # address = db.Column(db.String(100), nullable=False)
     apartment = db.Column(db.String(6), nullable=True)
-    # city = db.Column(db.String(35), nullable=False)
-    # state = db.Column(db.String(2), nullable=False)
-    # zipcode = db.Column(db.String(5), nullable=False)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     standard_address = db.Column(db.String(150), nullable=True)
@@ -64,6 +63,18 @@ class Chore(db.Model):
     description = db.Column(db.String(150), nullable=False)
     duration_minutes = db.Column(db.String(20), nullable=False)
     frequency = db.Column(db.String(30), nullable=False)
+
+    ##WRITE METHOD TO CAST DAYS OF THE WEEK IN FREQ AS LIST
+    def dayify_frequency(self):
+        """Takes the frequency field (chore.frequency=[d/w/m, numdays, time, 
+            any/morning/evening]) and splits it into a list)"""
+        self.frequency = (self.frequency).split("|")
+        if self.frequency[0] == 'daily' or self.frequency[0] == 'weekly':
+            self.frequency[1] = [str(char) for char in self.frequency[1]]
+
+    # users = db.relationship("User",
+    #                     secondary="userchores",
+    #                     backref="chores")
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -87,25 +98,15 @@ class Userchore(db.Model):
     rating = db.Column(db.Integer, nullable=True)
     commitment = db.Column(db.String(50), nullable=True)
 
-    # Define relationship to user
-    user = db.relationship("User",
-                           backref=db.backref("userchores", order_by=uc_id))
-
-    # Define relationship to task
-    chore = db.relationship("Chore",
-                            backref=db.backref("userchores", order_by=uc_id))
-
     # Define relationship to addresses
     address = db.relationship("Address",
                             backref=db.backref("userchores", order_by=uc_id))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
-
-        return "<Rating rating_id=%s movie_id=%s user_id=%s score=%s>" % (
-            self.rating_id, self.movie_id, self.user_id, self.score)
-
-
+        return "<Userchore uc_id=%s user_id=%s task_id=%s address_id=%s rating=%s commitment=%s>" % (self.uc_id, 
+                self.user_id , self.task_id , self.address_id, self.rating, 
+                self.commitment)
 ##############################################################################
 # Helper functions
 

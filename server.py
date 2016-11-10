@@ -5,10 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, Userchore
 
-import dbwrangler
-
-import apiapijoyjoy
-
+import dbwrangler, apiapijoyjoy, sys
+#Consider grouping these by purpose
 
 app = Flask(__name__)
 
@@ -142,43 +140,46 @@ def claimchore():
     """Claim a chore"""
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
-    userchores = Userchore.query.filter_by(address_id=user.address).all()
+    userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
     chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
-    for chore in chores:
-        chore.frequency = chore.frequency.split("|") 
-    #chore.frequency=[d/w/m, numdays, time, any/morning/evening]
-
-    #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
+    days = [chore.dayify_frequency() for chore in chores]
+    print chores[1]
     return render_template("takeachore.html", chores=chores, userchores=userchores, user=user)
-
-@app.route('/upcomingchores')
-def viewchore():
-    """See upcoming chores"""
-    user_id = session["user_id"]
-    user = User.query.filter_by(email=user_id).first()
-    #return all chores at this address
-
-    userchores = Userchore.query.filter_by(address_id=user.address).all()
-    chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
-    #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
-    return render_template("upcomingchores.html", chores=chores)
 
 @app.route('/takechoreform', methods=['POST'])
 def feedjsboxes():
+    """Get remaining days available for a chore and feed them to JS at takeachore.html"""
     numfromform = request.form.get("numfromform")
     userchores = Userchore.query.filter_by(task_id=numfromform).all()
-    base_chore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
-    #that's time consuming, actually want to search inside userchores
-    base_chore = Chore.query.filter_by(chore_id=base_chore.chore_id).first()
-    #this will be the chore object for basechore
+    base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
+    base_chore = Chore.query.filter_by(chore_id=base_userchore[0].task_id).first()
     intsleft = base_chore.frequency[1]
+    # intsleft = str(intsleft) #UNICODE IS NOT MY FRIEND
     for chore in userchores:
-            if chore.commitment == 'INIT':
-                pass
-            elif chore.commitment:
-                for item in chore.commitment:
-                    intsleft.replace(item, "")
+        chore.commitment = str(chore.commitment)
+        if chore.commitment == 'INIT':
+            pass
+        elif chore.commitment:
+            for char in chore.commitment:
+                print char
+                intsleft = intsleft.replace(char,'')
+                print intsleft
     return intsleft
+
+@app.route('/takeagreements', methods=['POST'])
+def takeagreements():
+    """ Get agreed days from form and add them to userchores table in DB"""
+    chore_id = request.form.get("chore_id")
+    daysagreed = request.form.get("daysagreed")
+    daysagreed = daysagreed.split(",")
+    days_agreed = ""
+    for i in range(7):
+        if daysagreed[i] == 'true':
+            days_agreed = days_agreed + str(i)
+        else:
+            pass
+    dbwrangler.add_commitment(days_agreed, chore_id)
+    return redirect("/takeachore")
 
 @app.route('/logout')
 def logout():
@@ -188,6 +189,18 @@ def logout():
     flash("Logged Out.")
     return redirect("/")
 
+
+@app.route('/upcomingchores')
+def viewchore():
+    """See upcoming chores"""
+    user_id = session["user_id"]
+    user = User.query.filter_by(email=user_id).first()
+    #return all chores at this address
+
+    userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
+    chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
+    #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
+    return render_template("upcomingchores.html", chores=chores)
 
 #things to paste later
 # <input type="text" name="" placeholder="" required>
