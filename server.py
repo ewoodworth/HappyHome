@@ -153,7 +153,10 @@ def feedjsboxes():
     userchores = Userchore.query.filter_by(task_id=numfromform).all()
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].task_id).first()
-    intsleft = base_chore.frequency[1]
+    base_chore_freq = base_chore.dayify_frequency()[1]
+    print base_chore_freq
+    days_left = base_chore.frequency[1]
+    print intsleft #from ints left delete indexes matching numerals in commitment POPOPOP
     # intsleft = str(intsleft) #UNICODE IS NOT MY FRIEND
     for chore in userchores:
         chore.commitment = str(chore.commitment)
@@ -162,9 +165,9 @@ def feedjsboxes():
         elif chore.commitment:
             for char in chore.commitment:
                 print char
-                intsleft = intsleft.replace(char,'')
+                intsleft = intsleft.pop(int(char))
                 print intsleft
-    return intsleft
+    return intsleft  ###ALL THIS STUFF
 
 @app.route('/takeagreements', methods=['POST'])
 def takeagreements():

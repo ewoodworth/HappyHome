@@ -63,6 +63,12 @@ class Chore(db.Model):
     description = db.Column(db.String(150), nullable=False)
     duration_minutes = db.Column(db.String(20), nullable=False)
     frequency = db.Column(db.String(30), nullable=False)
+    occurance = db.Column(db.String(10), nullable=True)
+    days = db.Column(db.Integer, nullable=True)
+    time = db.Column(db.Time, nullable=True)
+    commment = db.Column(db.String(15), nullable=True)
+
+    #Monday is 0 and Sunday is 6 
 
     ##WRITE METHOD TO CAST DAYS OF THE WEEK IN FREQ AS LIST
     def dayify_frequency(self):
@@ -71,10 +77,9 @@ class Chore(db.Model):
         self.frequency = (self.frequency).split("|")
         if self.frequency[0] == 'daily' or self.frequency[0] == 'weekly':
             self.frequency[1] = [str(char) for char in self.frequency[1]]
+            weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+            self.frequency[1] = [weekdays[int(item)] for item in self.frequency[1]]
 
-    # users = db.relationship("User",
-    #                     secondary="userchores",
-    #                     backref="chores")
 
     def __repr__(self):
         """Provide helpful representation when printed."""

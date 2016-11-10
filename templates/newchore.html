@@ -20,7 +20,7 @@
           <label class="headline-label" for="initial-pulldown">
             How often does this need to be done:
           </label>
-          <select id="initial-pulldown" class="pulldown-width spacey form-control" name="freq">
+          <select id="initial-pulldown" class="pulldown-width spacey form-control" name="occurance">
             <option></option>
             <option value='daily'>daily</option>
             <option value='weekly'>weekly</option>
@@ -44,11 +44,11 @@
           This chore needs to happen at:
           </label>
           <br> 
-          <input type='radio' name='ampm' value='ALL' checked='checked'>Any Time
+          <input type='radio' name='time_comment' value='ALL' checked='checked'>Any Time
           <br>
-          <input type='radio' name='ampm' value='MORNING'>Any time in the morning
+          <input type='radio' name='time_comment' value='MORNING'>Any time in the morning
           <br>
-          <input type='radio' name='ampm' value='EVENING'>Any time in the evening
+          <input type='radio' name='time_comment' value='EVENING'>Any time in the evening
           <br>
           <label id="by-time-label" for="by-time">
           This time:
@@ -75,11 +75,11 @@
       if ($("#initial-pulldown").val() == 'daily') {
       } else if ($("#initial-pulldown").val() == 'weekly') {
           for (var i = 0; i < dow.length; i++) {
-        secondElement.append(" <input type='checkbox' name='days' value=" + i + ">" + dow[i]);
+        secondElement.append(" <input type='checkbox' name='days_weekly' value=" + i + ">" + dow[i]);
         };
       $("#secondary-label").html("Which days does it need to happen?");
       } else if ($("#initial-pulldown").val() == 'monthly') {
-        secondElement.append("By day <input type='number' name='days' min='1' max='31'> of the month.");
+        secondElement.append("By day <input type='number' name='date_of_month' min='1' max='31'> of the month.");
       }
 
       // finally, unhide the second pulldown
