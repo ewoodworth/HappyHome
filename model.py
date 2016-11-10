@@ -64,8 +64,9 @@ class Chore(db.Model):
     duration_minutes = db.Column(db.String(20), nullable=False)
     frequency = db.Column(db.String(30), nullable=False)
     occurance = db.Column(db.String(10), nullable=True)
-    days = db.Column(db.Integer, nullable=True)
-    time = db.Column(db.Time, nullable=True)
+    days_weekly = db.Column(db.Integer, nullable=True)
+    date_monthly = db.Column(db.Integer, nullable=True)
+    by_time = db.Column(db.Time, nullable=True)
     commment = db.Column(db.String(15), nullable=True)
 
     #Monday is 0 and Sunday is 6 
