@@ -31,21 +31,21 @@
     {{ chore.name }}
     </td>
     <td>
-    {% if chore.frequency[0] == 'daily' %}
+    {% if chore.occurance == 'daily' %}
       Every day
-    {% elif chore.frequency[0] == 'weekly' %}
-      Weekly on {% for item in chore.frequency[1] %}{{ item }}, {% endfor %}
-    {% elif chore.frequency[0] == 'monthly' %}
-      Monthly on day {{ chore.frequency[1] }} of the month
+    {% elif chore.occurance == 'weekly' %}
+      Weekly on {% for item in chore.days_weekly %}{{ item }}, {% endfor %}
+    {% elif chore.occurance == 'monthly' %}
+      Monthly on day {{ chore.date_monthly }} of the month
     {% endif %}
-    {% if chore.frequency[2] == '0' and chore.frequency[3] == 'ALL' %}
+    {% if chore.commment == 'ALL' %}
         at any time of day.
-      {% elif chore.frequency[3] == 'MORNING' %}
+      {% elif chore.commment == 'MORNING' %}
         in the morning.
-      {% elif chore.frequency[3] == 'EVENING' %}
+      {% elif chore.commment == 'EVENING' %}
         in the evening.
     {% else %}
-      at {{ chore.frequency[2] }}
+      at {{ chore.by_time }}
     {% endif %}
     </td>
     </tr>
@@ -68,7 +68,6 @@
       // sendFormIn();
       // update the secondary menu if there's a value
       if (mainPull.val() !== "") {
-        console.log('It Started!');
         sendFormIn();
       // otherwise, hide it
       } else {
@@ -101,7 +100,7 @@
     function successFunction(ints){
       $("#secondary-form-group").empty();
       for (var i = 0; i < chore.frequency[1].length; i++) {
-        $("#secondary-form-group").append(" <input type='checkbox' id='day_" + [i] +"-checkbox' name = 'day' value=" + chore.frequency[1][i] + ">" + chore.frequency[1][i][0]);
+        $("#secondary-form-group").append(" <input type='checkbox' id='day_" + [i] +"-checkbox' name = 'day' value=" + chore.days_weekly[i] + ">" + chore.days_weekly[0]);
         };
         $("#secondary-form-group").append(" <button id='agree-button'>I'll Do This!</button>")
             $("#agree-button").click(function() { 
@@ -115,7 +114,7 @@
         // HOW LONG DO VARIABLES HOLD SCOPE IN JS????
         // CAN I JUST USE THIS FUNCTION AGAIN ON LINE 45 AND ADD MORE ITEMS TO THE JSON (OBV WON'T USE THEM BOTH TIMES) <- No, wrong route
         var formInputs = {
-          "numfromform": $("#initial-pulldown").val()
+          "form_chore_id": $("#initial-pulldown").val()
         }
 
         $.post("/takechoreform", 

@@ -62,9 +62,9 @@ class Chore(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(150), nullable=False)
     duration_minutes = db.Column(db.String(20), nullable=False)
-    frequency = db.Column(db.String(30), nullable=False)
+    frequency = db.Column(db.String(30), nullable=True)
     occurance = db.Column(db.String(10), nullable=True)
-    days_weekly = db.Column(db.Integer, nullable=True)
+    days_weekly = db.Column(db.String, nullable=True)
     date_monthly = db.Column(db.Integer, nullable=True)
     by_time = db.Column(db.Time, nullable=True)
     commment = db.Column(db.String(15), nullable=True)
@@ -96,7 +96,7 @@ class Userchore(db.Model):
     uc_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
               nullable=False)
-    task_id = db.Column(db.Integer, db.ForeignKey('chores.chore_id'), 
+    chore_id = db.Column(db.Integer, db.ForeignKey('chores.chore_id'), 
               nullable=False)
     address_id= db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=False)

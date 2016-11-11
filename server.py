@@ -106,7 +106,7 @@ def accept_address():
 
 @app.route('/newchore')
 def createchore():
-    """Create a new task for your household"""
+    """Render form to enter new chore for the household"""
     return render_template("newchore.html")
 
 @app.route('/newchore', methods=['POST'])
@@ -118,22 +118,25 @@ def newchore():
     duration_minutes = request.form.get('duration_minutes') or 0
     #compse duration in minutes
     duration_minutes = (int(duration_hours) * 60 + int(duration_minutes))
-    freq = request.form.get('freq')
-    ampm = request.form.get('ampm') or '0'
-    by_time = request.form.get('by-time') or '0'
-    on_days = request.form.getlist('days') or '0'
-    on_days = "".join(on_days)
-    if freq == 'daily':
-        on_days = '0123456'
+    occurance = request.form.get('occurance')
+    comment = request.form.get('comment')
+    by_time = request.form.get('by-time')
+    #^BREAKS ON NO VALUE << So, don't feed it a non-value<<convert to dtaetime here
+    if by_time:
+            by_time = datetime.datetime.strptime(str(by_time), "%H:%M"),
+    else:
+            by_time = None
+    days_weekly = request.form.getlist('days_weekly')
+    date_monthly = request.form.get('date_monthly')
+    if occurance == 'daily':
+        days_weekly = "{Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday}"
 
-    freq_contents = (freq, on_days, by_time, ampm)
-    freq = "|".join(freq_contents)
-    chore_list = [name, description, duration_minutes, freq]
+    chore_list = [name, description, duration_minutes, occurance, by_time, 
+                  comment, days_weekly, date_monthly]
 
     dbwrangler.newchore(chore_list)
 
     return redirect("/")
-
 
 @app.route('/takeachore', methods=['GET'])
 def claimchore():
@@ -142,21 +145,24 @@ def claimchore():
     user = User.query.filter_by(email=user_id).first()
     userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
     chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
-    days = [chore.dayify_frequency() for chore in chores]
-    print chores[1]
+
     return render_template("takeachore.html", chores=chores, userchores=userchores, user=user)
 
 @app.route('/takechoreform', methods=['POST'])
 def feedjsboxes():
     """Get remaining days available for a chore and feed them to JS at takeachore.html"""
-    numfromform = request.form.get("numfromform")
-    userchores = Userchore.query.filter_by(task_id=numfromform).all()
+    form_chore_id = request.form.get("form_chore_id")
+    userchores = Userchore.query.filter_by(task_id=form_chore_id).all()
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].task_id).first()
-    base_chore_freq = base_chore.dayify_frequency()[1]
-    print base_chore_freq
-    days_left = base_chore.frequency[1]
-    print intsleft #from ints left delete indexes matching numerals in commitment POPOPOP
+    print "THE BASE CHORE IN PLAY IS:", base_chore
+    base_chore_freq = base_chore.days_weekly
+    print "THE FREQUENCY OF THIS CHORE IS", base_chore_freq
+    days_left = base_chore.days_weekly
+    for item in days_left:
+            print item
+    days_left_list = [item for item in set(days_left)]
+    print (days_left_list) #from ints left delete indexes matching numerals in commitment POPOPOP
     # intsleft = str(intsleft) #UNICODE IS NOT MY FRIEND
     for chore in userchores:
         chore.commitment = str(chore.commitment)
