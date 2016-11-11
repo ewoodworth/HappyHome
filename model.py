@@ -111,7 +111,7 @@ class Userchore(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
         return "<Userchore uc_id=%s user_id=%s task_id=%s address_id=%s rating=%s commitment=%s>" % (self.uc_id, 
-                self.user_id , self.task_id , self.address_id, self.rating, 
+                self.user_id , self.chore_id , self.address_id, self.rating, 
                 self.commitment)
 ##############################################################################
 # Helper functions

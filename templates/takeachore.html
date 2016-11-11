@@ -96,7 +96,7 @@
           );
     }
 
-    function successFunction(ints){
+    function successFunction(days_left){
       $("#secondary-form-group").empty();
       for (var i = 0; i < chore.frequency[1].length; i++) {
         $("#secondary-form-group").append(" <input type='checkbox' id='day_" + [i] +"-checkbox' name = 'day' value=" + chore.days_weekly[i] + ">" + chore.days_weekly[0]);

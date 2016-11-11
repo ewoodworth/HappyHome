@@ -151,6 +151,7 @@ def claimchore():
                                      for userchore in userchores]
     for chore in chores:
         chore.days_weekly = chore.days_weekly.split("|")
+
     return render_template("takeachore.html", chores=chores, 
                             userchores=userchores, user=user)
 
@@ -159,27 +160,23 @@ def feedjsboxes():
     """Get remaining days available for a chore and feed them to JS at takeachore.html"""
     form_chore_id = request.form.get("form_chore_id")
     userchores = Userchore.query.filter_by(chore_id=form_chore_id).all()
+    #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
+    #get the rest of the chore data associated with that chore
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     print "THE BASE CHORE IN PLAY IS:", base_chore
-    base_chore_freq = base_chore.days_weekly
-    print "THE FREQUENCY OF THIS CHORE IS", base_chore_freq
-    days_left = base_chore.days_weekly
-    for item in days_left:
-            print item
-    days_left_list = [item for item in set(days_left)]
-    print (days_left_list) #from ints left delete indexes matching numerals in commitment POPOPOP
-    # intsleft = str(intsleft) #UNICODE IS NOT MY FRIEND
+    days_left = base_chore.days_weekly.split("|")
+    print "THE FREQUENCY OF THIS CHORE IS", days_left
+    print userchores
     for chore in userchores:
-        chore.commitment = str(chore.commitment)
         if chore.commitment == 'INIT':
             pass
         elif chore.commitment:
-            for char in chore.commitment:
-                print char
-                intsleft = intsleft.pop(int(char))
-                print intsleft
-    return intsleft  ###ALL THIS STUFF
+            for day in chore.commitment:
+                print "DAY IS", day
+                days_left = days_left.remove(day)
+                print "DAYS LEFT IS", days_left
+    return days_left  ###ALL THIS STUFF
 
 @app.route('/takeagreements', methods=['POST'])
 def takeagreements():
