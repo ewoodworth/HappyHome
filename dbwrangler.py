@@ -37,7 +37,6 @@ def newchore(chore_list):
 
 def add_commitment(days_aggreed, chore_id):
     """ Take in a list of days the user is committing to, add their commitment to userchores table """
-    #HOW COMMUNAL IS THIS DATA, WOULD I BENEFIT TO CALL THIS GLOBALLY IN SERVER?
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
     new_userchore = Userchore(user_id=user.user_id, address_id=user.address, 

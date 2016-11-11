@@ -34,7 +34,7 @@
     {% if chore.occurance == 'daily' %}
       Every day
     {% elif chore.occurance == 'weekly' %}
-      Weekly on {% for item in chore.days_weekly %}{{ item }}, {% endfor %}
+      Weekly on {% for item in chore.days_weekly %}{{ item }} {% endfor %}
     {% elif chore.occurance == 'monthly' %}
       Monthly on day {{ chore.date_monthly }} of the month
     {% endif %}
@@ -44,7 +44,7 @@
         in the morning.
       {% elif chore.commment == 'EVENING' %}
         in the evening.
-    {% else %}
+    {% elif chore.by_time %}
       at {{ chore.by_time }}
     {% endif %}
     </td>
@@ -95,14 +95,13 @@
           $('#secondary-form-group').empty()
           );
     }
-    //DO THE OLD RULES FOR FORM ELEMENTS FROM HTML STILL MATTER? NAME VS ID?
 
     function successFunction(ints){
       $("#secondary-form-group").empty();
       for (var i = 0; i < chore.frequency[1].length; i++) {
         $("#secondary-form-group").append(" <input type='checkbox' id='day_" + [i] +"-checkbox' name = 'day' value=" + chore.days_weekly[i] + ">" + chore.days_weekly[0]);
         };
-        $("#secondary-form-group").append(" <button id='agree-button'>I'll Do This!</button>")
+        $("#secondary-form-group").append(" <button id='agree-button'> I'll Do This!</button>")
             $("#agree-button").click(function() { 
                                agreeToChore();});
     }
@@ -111,8 +110,6 @@
 
     function sendFormIn() {
         // evt.preventDefault();
-        // HOW LONG DO VARIABLES HOLD SCOPE IN JS????
-        // CAN I JUST USE THIS FUNCTION AGAIN ON LINE 45 AND ADD MORE ITEMS TO THE JSON (OBV WON'T USE THEM BOTH TIMES) <- No, wrong route
         var formInputs = {
           "form_chore_id": $("#initial-pulldown").val()
         }

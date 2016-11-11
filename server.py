@@ -121,16 +121,18 @@ def newchore():
     occurance = request.form.get('occurance')
     comment = request.form.get('comment')
     by_time = request.form.get('by-time')
-    #^BREAKS ON NO VALUE << So, don't feed it a non-value<<convert to dtaetime here
     if by_time:
             by_time = datetime.datetime.strptime(str(by_time), "%H:%M"),
     else:
             by_time = None
     days_weekly = request.form.getlist('days_weekly')
     date_monthly = request.form.get('date_monthly')
+    #save day data as pipe-joined string
     if occurance == 'daily':
-        days_weekly = "{Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday}"
-
+        days_weekly = "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+    elif occurance == 'weekly':
+        days_weekly = "|".join(days_weekly)
+    print days_weekly
     chore_list = [name, description, duration_minutes, occurance, by_time, 
                   comment, days_weekly, date_monthly]
 
@@ -143,18 +145,22 @@ def claimchore():
     """Claim a chore"""
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
-    userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
-    chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
-
-    return render_template("takeachore.html", chores=chores, userchores=userchores, user=user)
+    userchores = Userchore.query.filter_by(address_id=user.address, 
+                                            commitment='INIT').all()
+    chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first()
+                                     for userchore in userchores]
+    for chore in chores:
+        chore.days_weekly = chore.days_weekly.split("|")
+    return render_template("takeachore.html", chores=chores, 
+                            userchores=userchores, user=user)
 
 @app.route('/takechoreform', methods=['POST'])
 def feedjsboxes():
     """Get remaining days available for a chore and feed them to JS at takeachore.html"""
     form_chore_id = request.form.get("form_chore_id")
-    userchores = Userchore.query.filter_by(task_id=form_chore_id).all()
+    userchores = Userchore.query.filter_by(chore_id=form_chore_id).all()
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
-    base_chore = Chore.query.filter_by(chore_id=base_userchore[0].task_id).first()
+    base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     print "THE BASE CHORE IN PLAY IS:", base_chore
     base_chore_freq = base_chore.days_weekly
     print "THE FREQUENCY OF THIS CHORE IS", base_chore_freq
@@ -205,10 +211,11 @@ def viewchore():
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
     #return all chores at this address
+    userchores = Userchore.query.filter_by(address_id=user.address, 
+                    commitment='INIT').all()
+    chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first() 
+                for userchore in userchores]
 
-    userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
-    chores = [Chore.query.filter_by(chore_id=userchore.task_id).first() for userchore in userchores]
-    #PRETTY SURE THIS IS NOT THE WAY THIS IS DONE
     return render_template("upcomingchores.html", chores=chores)
 
 #things to paste later
