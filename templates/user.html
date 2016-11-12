@@ -1,4 +1,12 @@
 {% extends 'base.html' %}
-{% block body %}
-    THIS IS THE USERPROFILE
+{% block content %}
+<br>
+<div>
+    <img src="http://placekitten.com/200/300">
+</div>
+<div class="well spaced" style="width:97%">
+  <h2>{{ user.email }} ({{ user.user_id }})</h2>
+  <b><p style="color:red">Age: {{ user.age }}</p>
+  <p style="color:red">Zipcode: {{ user.zipcode }}</p></b>
+</div>
 {% endblock %}

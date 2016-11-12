@@ -25,7 +25,10 @@ days_of_the_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Sat
 def index():
     """Homepage."""
     if session.get('user_id', False):
-        return render_template("dashboard.html")
+        user_id = session["user_id"]
+        user = User.query.filter_by(email=user_id).first()
+        print user.user_id
+        return render_template("dashboard.html", user=user)
     else:
         return render_template("homepage.html")
 
@@ -74,11 +77,11 @@ def newuser():
 
     return redirect("/add_address")
 
-@app.route("/users/<int:user_id>")
+@app.route("/user/<int: user_id>")
 def user_profile(user_id):
     """Show user profile"""
-
-    user = User.query.get(user_id)
+    user_id = session["user_id"]
+    user = User.query.filter_by(email=user_id).first()
     return render_template("user.html", user=user)
 
 @app.route('/add_address')
