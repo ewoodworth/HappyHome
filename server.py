@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, Userchore
 
-import dbwrangler, apiapijoyjoy, sys
+import dbwrangler, apiapijoyjoy, sys, helpers
 
 #Consider grouping these by purpose
 
@@ -128,16 +128,7 @@ def newchore():
     date_monthly = request.form.get('date_monthly')
     print date_monthly
 #START EXPORT HERE
-    if by_time:
-            by_time = datetime.datetime.strptime(str(by_time), "%H:%M"),
-    else:
-            by_time = None
-    #save day data as pipe-joined string
-    if occurance == 'daily':
-        days_weekly = "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
-    elif occurance == 'weekly':
-        days_weekly = "|".join(days_weekly)
-    print days_weekly
+
 #END EXPORT
     dbwrangler.newchore(name, description, duration_minutes, occurance, by_time, 
                   comment, days_weekly, date_monthly)
@@ -167,24 +158,16 @@ def feedjsboxes():
     #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
     #get the rest of the chore data associated with that chore
-    print "this is the base userchore *******>>>>>>",base_userchore
+    #CRAFT BETTER NAME THAN BASECHORE
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
-    print "THE BASE CHORE IN PLAY IS:", base_chore
     days_left = base_chore.days_weekly.split("|")
-    print "THE FREQUENCY OF THIS CHORE IS", days_left
-    print userchores
-    for chore in userchores:
-        if chore.commitment == 'INIT':
-            pass
-        elif chore.commitment:
-            print chore.commitment
-            for day in chore.commitment:
-                print "DAY IS", day
-                days_left = days_left.remove(day)
-                print "DAYS LEFT IS", days_left
+    helpers.find_days_left(base_chore)
+
     return jsonify({'days_left': days_left,
                     'chore_id': base_chore.chore_id, 
-                    'chore_name': base_chore.name})  ###ALL THIS STUFF dictionary > JSONIFY
+                    'chore_name': base_chore.name,
+                    'date_monthly': base_chore.date_monthly,
+                    'occurance': base_chore.occurance})
 
 @app.route('/takeagreements', methods=['POST'])
 def takeagreements():
@@ -192,14 +175,12 @@ def takeagreements():
     chore_id = request.form.get("chore_id")
     daysagreed = request.form.get("daysagreed")
     daysagreed = daysagreed.split("|")
-    print daysagreed
-    days_agreed = [str(i) for i in daysagreed]
-    print days_agreed
-    days_agreed = [days_of_the_week[i] for i in range(7) if days_agreed[i] == 'true']
-    print days_agreed
+    days_agreed = [str(i) for i in daysagreed] #No more unicode
+    days_agreed = [days_of_the_week[i] for i in range(7) if days_agreed[i] == 'true'] #Cast days from true to dayname
     days_agreed = "|".join(days_agreed)    
-    print days_agreed
+
     dbwrangler.add_commitment(days_agreed, chore_id)
+
     return redirect("/takeachore")
 
 @app.route('/logout')

@@ -77,17 +77,23 @@
     });
 
     function agreeToChore(){
-      var agreementsInput = {
-        "daysagreed": $('#Monday-checkbox').is(":checked").toString() + "|" +
-                $('#Tuesday-checkbox').is(":checked").toString() + "|" +
-                $('#Wednesday-checkbox').is(":checked").toString() + "|" +
-                $('#Thursday-checkbox').is(":checked").toString() + "|" +
-                $('#Friday-checkbox').is(":checked").toString() + "|" +
-                $('#Saturday-checkbox').is(":checked").toString() + "|" +
-                $('#Sunday-checkbox').is(":checked").toString(),
-        "chore_id": $('#initial-pulldown').val()
+      if (incoming.occurance == 'daily'||incoming.occurance == 'weekly') {
+        var agreementsInput = {
+          "daysagreed": $('#Monday-checkbox').is(":checked").toString() + "|" +
+                  $('#Tuesday-checkbox').is(":checked").toString() + "|" +
+                  $('#Wednesday-checkbox').is(":checked").toString() + "|" +
+                  $('#Thursday-checkbox').is(":checked").toString() + "|" +
+                  $('#Friday-checkbox').is(":checked").toString() + "|" +
+                  $('#Saturday-checkbox').is(":checked").toString() + "|" +
+                  $('#Sunday-checkbox').is(":checked").toString(),
+          "chore_id": $('#initial-pulldown').val()
+        };
+      } else if (incoming.occurance == 'monthly') {
+        var agreementsInput = {
+          "date_monthly": date_monthly,
+          "chore_id": $('#initial-pulldown').val()
+        };
       }
-
           console.log(agreementsInput);
 
           $.post("/takeagreements", 
@@ -100,11 +106,15 @@
       $("#secondary-form-group").empty();
       console.log(incoming.days_left)
       console.log(incoming.days_left.length)
-      for (var i = 0; i < incoming.days_left.length; i++) {
-        console.log(incoming.days_left[i])
-        // $("#secondary-form-group").append("Hi! *");
-        $("#secondary-form-group").append(" <input type='checkbox' id='" + incoming.days_left[i] + "-checkbox' name = 'day' value=" + incoming.days_left[i] + ">" + incoming.days_left[i][0] + incoming.days_left[i][1]);
-        };
+      if (incoming.occurance == 'daily'||incoming.occurance == 'weekly') {
+        for (var i = 0; i < incoming.days_left.length; i++) {
+          console.log(incoming.days_left[i])
+          // $("#secondary-form-group").append("Hi! *");
+          $("#secondary-form-group").append(" <input type='checkbox' id='" + incoming.days_left[i] + "-checkbox' name = 'day' value=" + incoming.days_left[i] + ">" + incoming.days_left[i][0] + incoming.days_left[i][1]);
+          };
+      } else if (incoming.occurance == 'monthly') {
+        $("#secondary-form-group").append(" <input type='checkbox' id='date_monthly-checkbox' name = 'date_monthly' value='checkbox'>" + incoming.date_monthly);
+      }
 
       $("#secondary-form-group").append(" <button id='agree-button'> I'll Do This!</button>")
             $("#agree-button").click(function() { 
