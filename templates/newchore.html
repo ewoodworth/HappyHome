@@ -81,7 +81,7 @@
         };
       $("#secondary-label").html("Which days does it need to happen?");
       } else if ($("#initial-pulldown").val() == 'monthly') {
-        secondElement.append("By day <input type='number' name='date_of_month' min='1' max='31'> of the month.");
+        secondElement.append("By day <input type='number' name='date_monthly' min='1' max='31'> of the month.");
       }
 
       // finally, unhide the second pulldown
@@ -90,7 +90,7 @@
 
     };
 
-    // event handler for change to the main pulldown
+    // event handler watching for change to the main pulldown
     var mainPull = $("#initial-pulldown"); 
     mainPull.change(function() {
 

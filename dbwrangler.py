@@ -17,15 +17,27 @@ def newaddress(address_list):
     user.address = address.address_id
     db.session.commit()
 
-def newchore(chore_list):
-    new_chore =  Chore(name=chore_list[0],
-                       description=chore_list[1],
-                       duration_minutes=chore_list[2],
-                       occurance=chore_list[3],
-                       days_weekly=chore_list[6],
-                       date_monthly=chore_list[7],
-                       by_time = chore_list[4],
-                       commment=chore_list[5])
+def newchore(name, description, duration_minutes, occurance, by_time, 
+                  comment, days_weekly, date_monthly):
+    """Clean up chore data and send it to PostgreSQL"""
+    if by_time:
+            by_time = datetime.datetime.strptime(str(by_time), "%H:%M"),
+    else:
+            by_time = None
+    #save day data as pipe-joined string
+    if occurance == 'daily':
+        days_weekly = "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+    elif occurance == 'weekly':
+        days_weekly = "|".join(days_weekly)
+    print days_weekly
+    new_chore =  Chore(name=name, 
+                    description=description, 
+                    duration_minutes=duration_minutes, 
+                    occurance=occurance, 
+                    by_time=by_time, 
+                    commment=comment, 
+                    days_weekly=days_weekly, 
+                    date_monthly=date_monthly)
     db.session.add(new_chore)
     db.session.commit()
     user = User.query.filter_by(email=session["user_id"]).first()
@@ -40,6 +52,6 @@ def add_commitment(days_aggreed, chore_id):
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
     new_userchore = Userchore(user_id=user.user_id, address_id=user.address, 
-                    task_id=chore_id, commitment=days_aggreed)
+                    chore_id=chore_id, commitment=days_aggreed)
     db.session.add(new_userchore)
     db.session.commit()

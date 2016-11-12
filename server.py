@@ -1,11 +1,12 @@
 from jinja2 import StrictUndefined
 
-from flask import Flask, render_template, request, flash, redirect, session
+from flask import Flask, jsonify, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, Userchore
 
 import dbwrangler, apiapijoyjoy, sys
+
 #Consider grouping these by purpose
 
 app = Flask(__name__)
@@ -17,6 +18,8 @@ app.secret_key = "S33KR1T"
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 app.jinja_env.auto_reload=True
+
+days_of_the_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 @app.route('/')
 def index():
@@ -121,22 +124,23 @@ def newchore():
     occurance = request.form.get('occurance')
     comment = request.form.get('comment')
     by_time = request.form.get('by-time')
+    days_weekly = request.form.getlist('days_weekly')
+    date_monthly = request.form.get('date_monthly')
+    print date_monthly
+#START EXPORT HERE
     if by_time:
             by_time = datetime.datetime.strptime(str(by_time), "%H:%M"),
     else:
             by_time = None
-    days_weekly = request.form.getlist('days_weekly')
-    date_monthly = request.form.get('date_monthly')
     #save day data as pipe-joined string
     if occurance == 'daily':
         days_weekly = "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
     elif occurance == 'weekly':
         days_weekly = "|".join(days_weekly)
     print days_weekly
-    chore_list = [name, description, duration_minutes, occurance, by_time, 
-                  comment, days_weekly, date_monthly]
-
-    dbwrangler.newchore(chore_list)
+#END EXPORT
+    dbwrangler.newchore(name, description, duration_minutes, occurance, by_time, 
+                  comment, days_weekly, date_monthly)
 
     return redirect("/")
 
@@ -163,6 +167,7 @@ def feedjsboxes():
     #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
     #get the rest of the chore data associated with that chore
+    print "this is the base userchore *******>>>>>>",base_userchore
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     print "THE BASE CHORE IN PLAY IS:", base_chore
     days_left = base_chore.days_weekly.split("|")
@@ -172,24 +177,28 @@ def feedjsboxes():
         if chore.commitment == 'INIT':
             pass
         elif chore.commitment:
+            print chore.commitment
             for day in chore.commitment:
                 print "DAY IS", day
                 days_left = days_left.remove(day)
                 print "DAYS LEFT IS", days_left
-    return days_left  ###ALL THIS STUFF
+    return jsonify({'days_left': days_left,
+                    'chore_id': base_chore.chore_id, 
+                    'chore_name': base_chore.name})  ###ALL THIS STUFF dictionary > JSONIFY
 
 @app.route('/takeagreements', methods=['POST'])
 def takeagreements():
     """ Get agreed days from form and add them to userchores table in DB"""
     chore_id = request.form.get("chore_id")
     daysagreed = request.form.get("daysagreed")
-    daysagreed = daysagreed.split(",")
-    days_agreed = ""
-    for i in range(7):
-        if daysagreed[i] == 'true':
-            days_agreed = days_agreed + str(i)
-        else:
-            pass
+    daysagreed = daysagreed.split("|")
+    print daysagreed
+    days_agreed = [str(i) for i in daysagreed]
+    print days_agreed
+    days_agreed = [days_of_the_week[i] for i in range(7) if days_agreed[i] == 'true']
+    print days_agreed
+    days_agreed = "|".join(days_agreed)    
+    print days_agreed
     dbwrangler.add_commitment(days_agreed, chore_id)
     return redirect("/takeachore")
 

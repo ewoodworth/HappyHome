@@ -78,13 +78,13 @@
 
     function agreeToChore(){
       var agreementsInput = {
-        "daysagreed": $('#day_0-checkbox').is(":checked").toString() + "," +
-                $('#day_1-checkbox').is(":checked").toString() + "," +
-                $('#day_2-checkbox').is(":checked").toString() + "," +
-                $('#day_3-checkbox').is(":checked").toString() + "," +
-                $('#day_4-checkbox').is(":checked").toString() + "," +
-                $('#day_5-checkbox').is(":checked").toString() + "," +
-                $('#day_6-checkbox').is(":checked").toString(),
+        "daysagreed": $('#Monday-checkbox').is(":checked").toString() + "|" +
+                $('#Tuesday-checkbox').is(":checked").toString() + "|" +
+                $('#Wednesday-checkbox').is(":checked").toString() + "|" +
+                $('#Thursday-checkbox').is(":checked").toString() + "|" +
+                $('#Friday-checkbox').is(":checked").toString() + "|" +
+                $('#Saturday-checkbox').is(":checked").toString() + "|" +
+                $('#Sunday-checkbox').is(":checked").toString(),
         "chore_id": $('#initial-pulldown').val()
       }
 
@@ -96,12 +96,17 @@
           );
     }
 
-    function successFunction(days_left){
+    function successFunction(incoming){
       $("#secondary-form-group").empty();
-      for (var i = 0; i < chore.frequency[1].length; i++) {
-        $("#secondary-form-group").append(" <input type='checkbox' id='day_" + [i] +"-checkbox' name = 'day' value=" + chore.days_weekly[i] + ">" + chore.days_weekly[0]);
+      console.log(incoming.days_left)
+      console.log(incoming.days_left.length)
+      for (var i = 0; i < incoming.days_left.length; i++) {
+        console.log(incoming.days_left[i])
+        // $("#secondary-form-group").append("Hi! *");
+        $("#secondary-form-group").append(" <input type='checkbox' id='" + incoming.days_left[i] + "-checkbox' name = 'day' value=" + incoming.days_left[i] + ">" + incoming.days_left[i][0] + incoming.days_left[i][1]);
         };
-        $("#secondary-form-group").append(" <button id='agree-button'> I'll Do This!</button>")
+
+      $("#secondary-form-group").append(" <button id='agree-button'> I'll Do This!</button>")
             $("#agree-button").click(function() { 
                                agreeToChore();});
     }
