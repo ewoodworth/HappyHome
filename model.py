@@ -61,26 +61,22 @@ class Chore(db.Model):
     chore_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(150), nullable=False)
-    duration_minutes = db.Column(db.String(20), nullable=False)
-    frequency = db.Column(db.String(30), nullable=True)
+    duration_minutes = db.Column(db.Integer, nullable=False)
     occurance = db.Column(db.String(10), nullable=True)
     days_weekly = db.Column(db.String, nullable=True)
     date_monthly = db.Column(db.Integer, nullable=True)
     by_time = db.Column(db.Time, nullable=True)
     commment = db.Column(db.String(15), nullable=True)
 
-    #Monday is 0 and Sunday is 6 
-
-    ##WRITE METHOD TO CAST DAYS OF THE WEEK IN FREQ AS LIST
-    def dayify_frequency(self):
-        """Takes the frequency field (chore.frequency=[d/w/m, numdays, time, 
-            any/morning/evening]) and splits it into a list)"""
-        self.frequency = (self.frequency).split("|")
-        if self.frequency[0] == 'daily' or self.frequency[0] == 'weekly':
-            self.frequency[1] = [str(char) for char in self.frequency[1]]
-            weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-            self.frequency[1] = [weekdays[int(item)] for item in self.frequency[1]]
-
+    def monthly_labor_hours(self):
+        """Returns time(min) per month for a given chore"""
+        if self.occurance == 'daily':
+            monthly_hours = self.duration_minutes * 30
+        elif self.occurance == 'weekly':
+            monthly_hours = len(self.days_weekly.split("|")) * 4 * self.duration_minutes
+        elif self.occurance == 'monthly':
+            monthly_hours = self.duration_minutes
+        return (monthly_hours)
 
     def __repr__(self):
         """Provide helpful representation when printed."""

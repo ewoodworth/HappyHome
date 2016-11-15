@@ -1,6 +1,30 @@
 {% extends 'dashboard.html' %}
-{% block body %}TASKS
+{% block head %}
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+{% endblock %}
+{% block body %}
     {% for chore in chores %}
-        <br>{{ chore.name }}{{ chore.frequency[0]}}
+        <br>{{ chore.name }}
     {% endfor %}
+<div class="melon-chart">
+  <canvas id="donutChart"></canvas>
+  <div id="donutLegend" class="chart-legend"></div>
+<div>
+
+<script>
+var options = { responsive: true };
+
+var ctx_donut = $("#donutChart").get(0).getContext("2d");
+
+$.get("/user-contributions.json", function (data) {
+    var myDonutChart = new Chart(ctx_donut, {
+                                            type: 'doughnut',
+                                            data: data,
+                                            options: options
+                                          });
+    $('#donutLegend').html(myDonutChart.generateLegend());
+});
+</script>
+
 {% endblock %}

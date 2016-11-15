@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
-{% block content %}
+{% block body %}
 <br>
 <div>
-    <img src="http://placekitten.com/200/300">
+    <img src="http://placekitten.com/225/300">
 </div>
-<div class="well spaced" style="width:97%">
-  <h2>{{ user.email }} ({{ user.user_id }})</h2>
-  <b><p style="color:red">Age: {{ user.age }}</p>
-  <p style="color:red">Zipcode: {{ user.zipcode }}</p></b>
+<div>
+<h2>
+{{ user.name }}<br>
+{{ user.email }}<br>
+{{ user.phone_number }}<br>
+{{ address.standard_address }}
+{{ address.apartment }}
+</h2>
 </div>
 {% endblock %}

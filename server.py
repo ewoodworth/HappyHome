@@ -21,16 +21,17 @@ app.jinja_env.auto_reload=True
 
 days_of_the_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
+
 @app.route('/')
 def index():
     """Homepage."""
     if session.get('user_id', False):
-        user_id = session["user_id"]
-        user = User.query.filter_by(email=user_id).first()
-        print user.user_id
-        return render_template("dashboard.html", user=user)
+        user = dbwrangler.get_current_user()
+        user_id = user.user_id
+        return render_template("dashboard.html", user=user, user_id=user_id)
     else:
         return render_template("homepage.html")
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -53,10 +54,12 @@ def login():
     session["user_id"] = user.email  #stores userid pulled from db in session
     return redirect("/")
 
+
 @app.route('/signup', methods=['GET'])
 def signup():
     """Display new user form"""
     return render_template("createuser.html")
+
 
 @app.route('/signup', methods=['POST'])
 def newuser():
@@ -77,17 +80,33 @@ def newuser():
 
     return redirect("/add_address")
 
-@app.route("/user/<int: user_id>")
-def user_profile(user_id):
+
+@app.route("/user")
+def user_profile():
     """Show user profile"""
-    user_id = session["user_id"]
-    user = User.query.filter_by(email=user_id).first()
-    return render_template("user.html", user=user)
+    user = dbwrangler.get_current_user()
+    address = Address.query.filter_by(address_id=user.address).first()
+    userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
+    chore_ids = [userchore.chore_id for userchore in userchores]
+    total_labor_minutes = 0
+    for item in chore_ids:
+        chore = Chore.query.filter_by(chore_id=item).first()
+        # monthly labor hours for this exact chore
+        if chore.occurance == 'daily':
+            monthly_minutes = int(chore.duration_minutes) * 30
+        elif chore.occurance == 'weekly':
+            monthly_minutes = len(chore.days_weekly.split("|")) * 4 * int(chore.duration_minutes)
+        elif chore.occurance == 'monthly':
+            monthly_minutes  = int(chore.duration_minutes)
+        total_labor_minutes = total_labor_minutes + monthly_minutes
+    return render_template("user.html", user=user, address=address)
+
 
 @app.route('/add_address')
 def new_address():
     """Present new address form"""
     return render_template("joinhousehold.html")
+
 
 @app.route('/process_address', methods=['POST'])
 def process_address():
@@ -97,23 +116,17 @@ def process_address():
     city =  request.form.get("city")
     state =  request.form.get("state")
     zipcode = request.form.get("zipcode")
-    
-    address_list = apiapijoyjoy.validate_address(address, apartment, 
-                   city, state, zipcode)
-    #this^ returns address_list
+    address_list = apiapijoyjoy.validate_address(address, city, state, zipcode, apartment)
     dbwrangler.newaddress(address_list)
     
     return redirect("/")
 
-@app.route('/accept_address')
-def accept_address():
-    user_id = session["user_id"]
-    user = User.query.filter_by(email=user_id).first()
 
 @app.route('/newchore')
 def createchore():
     """Render form to enter new chore for the household"""
     return render_template("newchore.html")
+
 
 @app.route('/newchore', methods=['POST'])
 def newchore():
@@ -129,20 +142,17 @@ def newchore():
     by_time = request.form.get('by-time')
     days_weekly = request.form.getlist('days_weekly')
     date_monthly = request.form.get('date_monthly')
-    print date_monthly
-#START EXPORT HERE
 
-#END EXPORT
     dbwrangler.newchore(name, description, duration_minutes, occurance, by_time, 
                   comment, days_weekly, date_monthly)
 
     return redirect("/")
 
+
 @app.route('/takeachore', methods=['GET'])
 def claimchore():
     """Claim a chore"""
-    user_id = session["user_id"]
-    user = User.query.filter_by(email=user_id).first()
+    user = dbwrangler.get_current_user()
     userchores = Userchore.query.filter_by(address_id=user.address, 
                                             commitment='INIT').all()
     chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first()
@@ -152,6 +162,7 @@ def claimchore():
 
     return render_template("takeachore.html", chores=chores, 
                             userchores=userchores, user=user)
+
 
 @app.route('/takechoreform', methods=['POST'])
 def feedjsboxes():
@@ -164,7 +175,7 @@ def feedjsboxes():
     #CRAFT BETTER NAME THAN BASECHORE
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     days_left = base_chore.days_weekly.split("|")
-    helpers.find_days_left(base_chore)
+    days_left = helpers.find_days_left(base_chore, userchores, days_left)
 
     return jsonify({'days_left': days_left,
                     'chore_id': base_chore.chore_id, 
@@ -172,8 +183,9 @@ def feedjsboxes():
                     'date_monthly': base_chore.date_monthly,
                     'occurance': base_chore.occurance})
 
-@app.route('/takeagreements', methods=['POST'])
-def takeagreements():
+
+@app.route('/take_weekly_agreements', methods=['POST'])
+def take_weekly_agreements():
     """ Get agreed days from form and add them to userchores table in DB"""
     chore_id = request.form.get("chore_id")
     daysagreed = request.form.get("daysagreed")
@@ -185,6 +197,18 @@ def takeagreements():
     dbwrangler.add_commitment(days_agreed, chore_id)
 
     return redirect("/takeachore")
+
+
+@app.route('/take_monthly_agreements', methods=['POST'])
+def take_monthly_agreements():
+    """ Get agreed days from form and add them to userchores table in DB"""
+    chore_id = request.form.get("chore_id")
+    date_monthly = request.form.get("date_monthly")
+
+    dbwrangler.add_commitment(date_monthly, chore_id)
+
+    return redirect("/takeachore")
+
 
 @app.route('/logout')
 def logout():
@@ -198,8 +222,7 @@ def logout():
 @app.route('/upcomingchores')
 def viewchore():
     """See upcoming chores"""
-    user_id = session["user_id"]
-    user = User.query.filter_by(email=user_id).first()
+    user = dbwrangler.get_current_user()
     #return all chores at this address
     userchores = Userchore.query.filter_by(address_id=user.address, 
                     commitment='INIT').all()
@@ -208,12 +231,40 @@ def viewchore():
 
     return render_template("upcomingchores.html", chores=chores)
 
-#things to paste later
-# <input type="text" name="" placeholder="" required>
-#
-#
 
+@app.route('/user-contributions.json')
+def user_contributions_chart():
+    """Return a chart of data about household contributions."""
+    user = dbwrangler.get_current_user()
+    all_housemates = User.query.filter_by(address=user.address).all()
+    total_household_labor = dbwrangler.total_houehold_labor(user)
+    # colorscheme = ["#00ff80", "#00ffbf", "#00ffff", "#00ccff", "#00bfff", 
+    #             "#0080ff",  "#0040ff", "#0000ff", "#4000ff", "#8000ff", 
+    #             "#bf00ff", "#ff00ff", "#ff00bf"]
+    # number_housemates = len(all_housemates)
+    # if len(colorscheme)/2 > number_housemates:
+    #     colorscheme = colorscheme[len(colorscheme)/4:-len(colorscheme)/4]
+    # len(colorscheme)/number_housemates #interval to 
+    dd_labels = ["Unclaimed"]
+    dd_data = []
+    dd_bgcolors = ["#a6a6a6","#00ccff", "#0080ff", "#8000ff"]
+    dd_hoverbg = ["#a6a6a6", "#a6a6a6","#a6a6a6","#a6a6a6"]
+    for housemate in all_housemates:
+        dd_labels.append(housemate.name)
+        individual_labor = dbwrangler.individual_labor(housemate.user_id)
+        dd_data.append(individual_labor)
+        leftover_labor = [total_household_labor - individual_labor]
+    for housemate in all_housemates:
+        print "{} is committing to {} minutes of the household labor".format(housemate.name, individual_labor)
+    dd_data = [leftover_labor] + dd_data
+    data_dict = {
+                "labels": dd_labels, 
+                "datasets":[{"data":dd_data, 
+                "backgroundColor":dd_bgcolors, 
+                "hoverBackgroundColor":dd_hoverbg}]
+                }
 
+    return jsonify(data_dict)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

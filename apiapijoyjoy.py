@@ -2,7 +2,8 @@ import requests
 import os
 
 def validate_address(address, city, state, zipcode, apartment=""):
-    address = "+".join([address, apartment, city, state, zipcode])
+    #APARTMENT IS ZIPCODE
+    address = "+".join([address, city, state, zipcode])
     address = address.replace(" ", "+")
     geocode_block = address +"+"+ city +"+"+ state +"+"+ zipcode
     google_key = os.environ['GOOGLE_MAPS_GEOCODING']
@@ -17,7 +18,8 @@ def validate_address(address, city, state, zipcode, apartment=""):
     latitude = address_json[u'results'][0][u'geometry'][u'location'][u'lat']
     longitude = address_json[u'results'][0][u'geometry'][u'location'][u'lng']
     standard_address = address_json[u'results'][0][u'formatted_address']
-
+    apartment = apartment
+    #APARTMENT IS ZIPCOE
     address_list = [latitude, longitude, standard_address, apartment]
 
     return address_list

@@ -76,8 +76,7 @@
       }
     });
 
-    function agreeToChore(){
-      if (incoming.occurance == 'daily'||incoming.occurance == 'weekly') {
+    function agreeToWeeklyChore() {
         var agreementsInput = {
           "daysagreed": $('#Monday-checkbox').is(":checked").toString() + "|" +
                   $('#Tuesday-checkbox').is(":checked").toString() + "|" +
@@ -88,19 +87,26 @@
                   $('#Sunday-checkbox').is(":checked").toString(),
           "chore_id": $('#initial-pulldown').val()
         };
-      } else if (incoming.occurance == 'monthly') {
+
+      $.post("/take_weekly_agreements", 
+      agreementsInput,
+      function() { $('#secondary-form-group').empty();}
+      );
+    }
+
+    function agreeToMonthlyChore(){
         var agreementsInput = {
-          "date_monthly": date_monthly,
+          "date_monthly": $('#date_monthly-checkbox').is(":checked").toString(),
           "chore_id": $('#initial-pulldown').val()
         };
-      }
-          console.log(agreementsInput);
+      
 
-          $.post("/takeagreements", 
-          agreementsInput,
-          $('#secondary-form-group').empty()
-          );
+      $.post("/take_monthly_agreements", 
+      agreementsInput,
+      function() { $('#secondary-form-group').empty();}
+      );
     }
+
 
     function successFunction(incoming){
       $("#secondary-form-group").empty();
@@ -112,13 +118,18 @@
           // $("#secondary-form-group").append("Hi! *");
           $("#secondary-form-group").append(" <input type='checkbox' id='" + incoming.days_left[i] + "-checkbox' name = 'day' value=" + incoming.days_left[i] + ">" + incoming.days_left[i][0] + incoming.days_left[i][1]);
           };
+          $("#secondary-form-group").append(" <button id='weekly-agree-button'> I'll Take These Days!</button>")
       } else if (incoming.occurance == 'monthly') {
         $("#secondary-form-group").append(" <input type='checkbox' id='date_monthly-checkbox' name = 'date_monthly' value='checkbox'>" + incoming.date_monthly);
+        $("#secondary-form-group").append(" <button id='monthly-agree-button'> I'll Do This!</button>");
       }
 
-      $("#secondary-form-group").append(" <button id='agree-button'> I'll Do This!</button>")
-            $("#agree-button").click(function() { 
-                               agreeToChore();});
+      $("#weekly-agree-button").click(function() { 
+                         agreeToWeeklyChore();
+      });
+      $("#monthly-agree-button").click(function() { 
+             agreeToMonthlyChore();
+      });
     }
 
       $('#secondary-form-group').show();
