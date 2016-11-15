@@ -28,7 +28,12 @@ def index():
     if session.get('user_id', False):
         user = dbwrangler.get_current_user()
         user_id = user.user_id
-        return render_template("dashboard.html", user=user, user_id=user_id)
+        #return all chores at this address
+        userchores = Userchore.query.filter_by(address_id=user.address, 
+                        commitment='INIT').all()
+        chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first() 
+                    for userchore in userchores]
+        return render_template("dashboard.html", user=user, chores=chores)
     else:
         return render_template("homepage.html")
 
