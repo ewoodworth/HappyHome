@@ -1,40 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'loginbar.html' %}
+{% block head %}
+    <title>Happy Home
+    </title>
+{% endblock %}
 {% block body %}
-    THIS IS THE HOMEPAGE
-    <html lang="en">
-  <head>
-    <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-  </head>
-  <body>
-    <form action="/login" method="POST">
-        <input type="email" name="email" placeholder="Email" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <input type="submit" value="Log In"><br>
-    </form>
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-    <script>
-      function onSignIn(googleUser) {
-        // Useful data for your client-side scripts:
-        var profile = googleUser.getBasicProfile();
-        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-        console.log('Full Name: ' + profile.getName());
-        console.log('Given Name: ' + profile.getGivenName());
-        console.log('Family Name: ' + profile.getFamilyName());
-        console.log("Image URL: " + profile.getImageUrl());
-        console.log("Email: " + profile.getEmail());
-
-        // The ID token you need to pass to your backend:
-        var id_token = googleUser.getAuthResponse().id_token;
-        console.log("ID Token: " + id_token);
-      };
-    </script>
-  </body>
-</html>
-    <form action="/signup" method="GET">
-        <input type="submit" value="Sign Up">
-    </form>
+    <div>
+        <p id='intro-text'>Adulting made easier! Distribute the workload of household maintainance. Help you and your roomates get on with your lives, and still make sure you know whose turn it is to take out the trash!
+        </p>
+    </div>
 {% endblock %}
 
 

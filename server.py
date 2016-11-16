@@ -29,10 +29,8 @@ def index():
         user = dbwrangler.get_current_user()
         user_id = user.user_id
         #return all chores at this address
-        userchores = Userchore.query.filter_by(address_id=user.address, 
-                        commitment='INIT').all()
-        chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first() 
-                    for userchore in userchores]
+        userchores = Userchore.query.filter(Userchore.user_id==user_id, Userchore.commitment!='INIT').all()
+        chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first() for userchore in userchores]
         return render_template("dashboard.html", user=user, chores=chores)
     else:
         return render_template("homepage.html")
@@ -177,7 +175,6 @@ def feedjsboxes():
     #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
     #get the rest of the chore data associated with that chore
-    #CRAFT BETTER NAME THAN BASECHORE
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     days_left = base_chore.days_weekly.split("|")
     days_left = helpers.find_days_left(base_chore, userchores, days_left)
@@ -224,35 +221,15 @@ def logout():
     return redirect("/")
 
 
-@app.route('/upcomingchores')
-def viewchore():
-    """See upcoming chores"""
-    user = dbwrangler.get_current_user()
-    #return all chores at this address
-    userchores = Userchore.query.filter_by(address_id=user.address, 
-                    commitment='INIT').all()
-    chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first() 
-                for userchore in userchores]
-
-    return render_template("upcomingchores.html", chores=chores)
-
-
 @app.route('/user-contributions.json')
 def user_contributions_chart():
     """Return a chart of data about household contributions."""
     user = dbwrangler.get_current_user()
     all_housemates = User.query.filter_by(address=user.address).all()
     total_household_labor = dbwrangler.total_houehold_labor(user)
-    # colorscheme = ["#00ff80", "#00ffbf", "#00ffff", "#00ccff", "#00bfff", 
-    #             "#0080ff",  "#0040ff", "#0000ff", "#4000ff", "#8000ff", 
-    #             "#bf00ff", "#ff00ff", "#ff00bf"]
-    # number_housemates = len(all_housemates)
-    # if len(colorscheme)/2 > number_housemates:
-    #     colorscheme = colorscheme[len(colorscheme)/4:-len(colorscheme)/4]
-    # len(colorscheme)/number_housemates #interval to 
     dd_labels = ["Unclaimed"]
     dd_data = []
-    dd_bgcolors = ["#a6a6a6","#00ccff", "#0080ff", "#8000ff"]
+    dd_bgcolors = helpers.color_picker(len(all_housemates)+1)
     dd_hoverbg = ["#a6a6a6", "#a6a6a6","#a6a6a6","#a6a6a6"]
     for housemate in all_housemates:
         dd_labels.append(housemate.name)

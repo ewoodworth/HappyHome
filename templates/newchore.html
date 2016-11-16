@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block head %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<script src="/static/scripts.js"></script>
 {% endblock %}
 {% block body %}
     <form action="/newchore" method="POST">
@@ -58,49 +59,4 @@
       </div>
       <input type="submit" value="Submit">
     </form>
-    <script>
-
-    // DISTINGUISH BETWEEN MONTHLY AND DAILY INTERVALLED CHORES
-    "use strict";
-    // a general function to update the secondary pulldown
-    function addsecondElementOptions(color) {
-
-      // get array for days of the week
-      var dow = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-      // get the secondary pulldown and empty it
-      var secondElement = $("#secondary-element");
-      secondElement.empty();
-      $("#secondary-label").html("");
-
-      // add an option foreach possibility in form-initial
-      if ($("#initial-pulldown").val() == 'daily') {
-      } else if ($("#initial-pulldown").val() == 'weekly') {
-          for (var i = 0; i < dow.length; i++) {
-        secondElement.append(" <input type='checkbox' name='days_weekly' value=" + dow[i] + ">" + dow[i]);
-        };
-      $("#secondary-label").html("Which days does it need to happen?");
-      } else if ($("#initial-pulldown").val() == 'monthly') {
-        secondElement.append("By day <input type='number' name='date_monthly' min='1' max='31'> of the month.");
-      }
-
-      // finally, unhide the second pulldown
-      $('#secondary-form-group').show();
-      $('#time-form-group').show();
-
-    };
-
-    // event handler watching for change to the main pulldown
-    var mainPull = $("#initial-pulldown"); 
-    mainPull.change(function() {
-
-      // update the secondary pulldown if there's a value
-      if (mainPull.val() !== "") {
-        addsecondElementOptions(mainPull.val());
-      // otherwise, hide it
-      } else {
-        $('#secondary-form-group').hide();
-      }
-    });
-    </script>
 {% endblock %}

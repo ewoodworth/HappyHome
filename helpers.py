@@ -1,6 +1,11 @@
 from flask import session
 from model import User, Address, Chore, Userchore
 
+MY_COLOR_FAMILY = ["#339980", "#339999", "#338099", "#336699", "#334d99", 
+                   "#333399", "#4d3399", "#663399", "#803399", "#993399", 
+                   "#993380", "#993366", "#99334d", "#993333", "#994d33", 
+                   "#994d34", "#994d35", "#994d36", "#994d37", "#994d38", 
+                   "#994d39", "#994d40", "#994d41", "#994d42"]
 
 def find_days_left(base_chore, userchores, days_left):
     """Take a chore and find all unclaimed occurances"""
@@ -39,3 +44,14 @@ def total_household_labor():
         print total_labor_chore, "<---TOTAL LABOR CHORE"
         total_labor_minutes = total_labor_minutes + total_labor_chore
     return total_labor_minutes
+
+
+def color_picker(n_users):
+    """Returns a list of colors equal in length to the number of users from a 
+    curated list equal to the number of users"""
+    if n_users > len(MY_COLOR_FAMILY):
+        print "You have exceeded the mav number of users! Extended capacity coming soon!"
+    steps = len(MY_COLOR_FAMILY) / n_users
+    user_colors = MY_COLOR_FAMILY[::steps]
+    user_colors = user_colors[:n_users]
+    return user_colors

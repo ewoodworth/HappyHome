@@ -1,45 +1,7 @@
 {% extends 'base.html' %}
 {% block head %}
-<script src="https://code.jquery.com/jquery.js"></script>
-// <script>
-//   "use strict";
-//     var formInputs = {
-//         "address": $("#address").val(),
-//         "apartment": $("#apartment").val(),
-//         "city": $("#city").val(),
-//         "state": $("#state").val(),
-//         "zipcode": $("#zipcode").val()
-//     };
-
-//   function noAddress() {   
-//     $.post('/add_address', {confirm:False})    
-//   }
-
-//   function yesAddress() {   
-//     $.post('/accept_address', {confirm:True}, whereGoesWhatComes)    
-//   }
-
-//   function confirmAddress() {
-//     console.log('This statement comes from confirmAddress');
-//     $("#confirmaddress").append("Please confirm that you live at:\n"+standard_address).removeAttr("type");
-//   }
-
-//   function sendDetails(evt) {
-//     // go get standard address from python
-//     // evt.preventDefault();
-//     console.log('This statement comes from sendDetails');
-//     $.post('/process_address', formInputs);    
-//   }
-
-//   $("#confirmAddress").on("click", function () { yesAddress();});
-//   $("#noconfirm").on("click", {confirm:false}, function () { noAddress();});
-//   $("#address_button").on("click", function () { sendDetails();});
-// </script>
 {% endblock %}
-
-
 {% block body %}
-    THIS IS A FORM TO add address info to a user
     <div>
         <form action="/process_address" method="POST">
             <input type="text" id= "address" name="address" placeholder="Street Address">

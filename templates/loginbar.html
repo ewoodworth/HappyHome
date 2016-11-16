@@ -1,0 +1,22 @@
+<html lang="en">
+  <head>
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="/static/scripts.js"></script>
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    <a href="/login">Log In</a><br>
+    <a href="/signup">Sign Up</a><br>
+    <form action="/login" method="POST">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="submit" value="Log In"><br>
+    </form>
+    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    {% block body %}
+    {% endblock %}
+  </body>
+</html>

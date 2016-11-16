@@ -11,20 +11,5 @@
   <canvas id="donutChart"></canvas>
   <div id="donutLegend" class="chart-legend"></div>
 <div>
-
-<script>
-var options = { responsive: true };
-
-var ctx_donut = $("#donutChart").get(0).getContext("2d");
-
-$.get("/user-contributions.json", function (data) {
-    var myDonutChart = new Chart(ctx_donut, {
-                                            type: 'doughnut',
-                                            data: data,
-                                            options: options
-                                          });
-    $('#donutLegend').html(myDonutChart.generateLegend());
-});
-</script>
-
+<script src="/static/scripts.js"></script>
 {% endblock %}
