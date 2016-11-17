@@ -7,6 +7,10 @@ from model import connect_to_db, db, User, Address, Chore, Userchore
 
 import dbwrangler, apiapijoyjoy, sys, helpers
 
+from dateutil.relativedelta import *
+from dateutil.rrule import *
+from datetime import datetime
+
 #Consider grouping these by purpose
 
 app = Flask(__name__)
@@ -20,6 +24,7 @@ app.jinja_env.undefined = StrictUndefined
 app.jinja_env.auto_reload=True
 
 days_of_the_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5, 'Sunday':6}
 
 
 @app.route('/')
@@ -29,9 +34,12 @@ def index():
         user = dbwrangler.get_current_user()
         user_id = user.user_id
         #return all chores at this address
-        userchores = Userchore.query.filter(Userchore.user_id==user_id, Userchore.commitment!='INIT').all()
-        chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first() for userchore in userchores]
-        return render_template("dashboard.html", user=user, chores=chores)
+        chores = helpers.chores_by_date(user_id)
+        now = datetime.utcnow()
+        until = now + relativedelta(months=+1)
+        month_of_days_dt = rrule(DAILY,dtstart=now,until=until)
+        month_of_days = [day.strftime("%A, %B %d, %Y") for day in month_of_days_dt]
+        return render_template("dashboard.html", user=user, chores=chores, month=month_of_days)
     else:
         return render_template("homepage.html")
 
@@ -155,6 +163,8 @@ def newchore():
 @app.route('/takeachore', methods=['GET'])
 def claimchore():
     """Claim a chore"""
+    ##FFEED THE LIST OF CHORES IN SUCH A WAY AS YOU CAN DISPLAY THEM CHRONOLOGICALLY
+
     user = dbwrangler.get_current_user()
     userchores = Userchore.query.filter_by(address_id=user.address, 
                                             commitment='INIT').all()

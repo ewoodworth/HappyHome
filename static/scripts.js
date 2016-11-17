@@ -15,21 +15,6 @@
     console.log("ID Token: " + id_token);
   };
 
-// BELOW THIS LINE IS FROM DASHBOARD.HTML
-
-  // var options = { responsive: true };
-
-  // var ctx_donut = $("#donutChart").get(0).getContext("2d");
-
-  // $.get("/user-contributions.json", function (data) {
-  //     var myDonutChart = new Chart(ctx_donut, {
-  //                                             type: 'doughnut',
-  //                                             data: data,
-  //                                             options: options
-  //                                           });
-  //     $('#donutLegend').html(myDonutChart.generateLegend());
-  // });
-
 
 // BELOW THIS LINE IS FROM NEWCHORE.HTML
     // a general function to update the secondary pulldown

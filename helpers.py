@@ -1,11 +1,17 @@
 from flask import session
 from model import User, Address, Chore, Userchore
 
+from dateutil.relativedelta import *
+from dateutil.rrule import *
+from datetime import datetime
+
 MY_COLOR_FAMILY = ["#339980", "#339999", "#338099", "#336699", "#334d99", 
                    "#333399", "#4d3399", "#663399", "#803399", "#993399", 
                    "#993380", "#993366", "#99334d", "#993333", "#994d33", 
                    "#994d34", "#994d35", "#994d36", "#994d37", "#994d38", 
                    "#994d39", "#994d40", "#994d41", "#994d42"]
+
+days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5, 'Sunday':6}
 
 def find_days_left(base_chore, userchores, days_left):
     """Take a chore and find all unclaimed occurances"""
@@ -55,3 +61,33 @@ def color_picker(n_users):
     user_colors = MY_COLOR_FAMILY[::steps]
     user_colors = user_colors[:n_users]
     return user_colors
+
+
+def chores_by_date(user_id):
+    """Generates a dictionary of one user's chores for a month, grouped by day"""
+    #return all chores for this user
+    userchores = Userchore.query.filter(Userchore.user_id==user_id, Userchore.commitment!='INIT').all()
+    for userchore in userchores:
+        userchore.commitment = userchore.commitment.split("|")
+    now = datetime.utcnow()
+    until = now + relativedelta(months=+1)
+    chores_by_date = {}
+    for userchore in userchores:
+        chore = Chore.query.filter_by(chore_id=userchore.chore_id).first()
+        if chore.occurance == 'weekly' or chore.occurance == 'daily':
+            weekdays = userchore.commitment
+            weekdays = [days_to_int[weekday] for weekday in weekdays]
+            instances = rrule(WEEKLY,dtstart=now,byweekday=weekdays,until=until)
+            for instance in instances:
+                instance = instance.strftime("%A, %B %d, %Y")
+                chores_by_date[instance] = chores_by_date.get(instance, [])
+                chores_by_date[instance].append(chore)
+        elif chore.occurance == 'monthly':
+            monthday = int(chore.date_monthly)
+            instances = rrule(MONTHLY,dtstart=now,bymonthday=monthday,until=until)
+            for instance in instances:
+                instance = instance.strftime("%A, %B %d, %Y")
+                chores_by_date[instance] = chores_by_date.get(instance, [])
+                chores_by_date[instance].append(chore)
+
+    return chores_by_date

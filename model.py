@@ -1,6 +1,6 @@
 """Models and database functions for final project."""
-import heapq
-import time
+
+
 from flask_sqlalchemy import SQLAlchemy
 # import correlation
 
@@ -9,7 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 # object, where we do most of our interactions (like committing, etc.)
 
 db = SQLAlchemy()
-
 
 ##############################################################################
 # Model definitions

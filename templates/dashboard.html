@@ -4,12 +4,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
 {% endblock %}
 {% block body %}
-    {% for chore in chores %}
-        <br>{{ chore.name }}
-    {% endfor %}
-<div class="melon-chart">
-  <canvas id="donutChart"></canvas>
-  <div id="donutLegend" class="chart-legend"></div>
 <div>
-<script src="/static/scripts.js"></script>
+    {% for day in month %}
+        {% if chores[day] %}
+            {{ day }}
+            {% for chore in chores %}
+                {{ chore.name }}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</div>
+<div class="contribution-chart">
+  <canvas id="donutChart"></canvas>
+</div>
+  <!-- <div id="donutLegend" class="chart-legend"></div> LEGEND (DISABLED FOR NOW)-->
+<script src="/static/chartscripts.js"></script>
 {% endblock %}
