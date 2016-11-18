@@ -72,9 +72,38 @@ def login():
 @app.route("/takefbuser", methods=['POST'])
 def take_fb_user():
     """Take in user from FB Login"""
-    print request.form.get("authResponse[userID]")
-    return redirect("/")
+    fb_id = request.form.get("authResponse[userID]")
+    user =  User.query.filter_by(fb_id=fb_id).first() #Finds user by FB if here
 
+    if not user:
+        new_user = User(fb_id=fb_id)
+        db.session.add(new_user)
+        db.session.commit()
+        user = User.query.filter_by(fb_id=fb_id).first()
+        session["user_id"] = user.fb_id 
+        return redirect("/moreinfoforfbuser")
+    if user:
+        session["user_id"] = user.email
+        return redirect("/")
+
+@app.route("/moreinfoforfbuser", methods=['GET'])
+def fbsignupform():
+    """Display new user form to collect data not gathered from fb"""
+    return render_template("createuserfromfb.html")
+
+@app.route("/moreinfoforfbuser", methods=['POST'])
+    """Create new user including their fb_id"""
+    fb_id = session["user_id"]
+    user = User.query.filter_by(fb_id=fb_id).first()
+    user.email = request.form["email"]
+    user.password = request.form["password"]
+    user.name = request.form["name"]
+    user.lname = request.form["lname"]
+    user.phone_number = request.form["phone_number"]
+    db.session.commit()
+    session["user_id"] = user.email #Start browser session
+
+    return redirect("/")
 
 @app.route('/signup', methods=['GET'])
 def signup():

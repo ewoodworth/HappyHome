@@ -8,11 +8,6 @@ def get_current_user():
     user = User.query.filter_by(email=user_id).first()
     return user
 
-# def total_labor(userchores):
-#     """Given a subset of the userchore table, return the total labor minutes for those chores"""
-
-#     return total_labor minutes
-
 def total_houehold_labor(user):
     """Get the total number of minutes for all the chores associated with a user's address"""
     userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
@@ -39,7 +34,6 @@ def individual_labor(user_id):
         else:
             times_done = userchore.commitment.split("|")
             individual_labor += int(chore.duration_minutes) * 4 * len(times_done)
-    print "INDIVIDUAL LABOR", individual_labor
     return individual_labor
 
 def newaddress(address_list):
@@ -66,7 +60,6 @@ def newchore(name, description, duration_minutes, occurance, by_time,
             by_time = datetime.datetime.strptime(str(by_time), "%H:%M"),
     else:
             by_time = None
-    #save day data as pipe-joined string
     if occurance == 'daily':
         days_weekly = "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
     elif occurance == 'weekly':

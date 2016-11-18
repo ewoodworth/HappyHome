@@ -18,12 +18,12 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String(50), nullable=False)
-    # fb_id =  db.Column(db.String(50), nullable=True)
-    password = db.Column(db.String(25), nullable=False)
-    name = db.Column(db.String(50), nullable=False)
-    # lname = db.Column(db.String(50), nullable=False)
-    phone_number = db.Column(db.String(15), nullable=False)
+    email = db.Column(db.String(50), nullable=True)
+    fb_id =  db.Column(db.String(50), nullable=True)
+    password = db.Column(db.String(25), nullable=True)
+    name = db.Column(db.String(50), nullable=True)
+    lname = db.Column(db.String(50), nullable=True)
+    phone_number = db.Column(db.String(15), nullable=True)
     address = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=True)
     chores = db.relationship("Chore",
@@ -46,12 +46,17 @@ class Address(db.Model):
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     standard_address = db.Column(db.String(150), nullable=True)
+    address_street_num = db.Column(db.String(10), nullable=True)
+    address_street = db.Column(db.String(50), nullable=True)
+    address_city = db.Column(db.String(50), nullable=True)
+    address_state = db.Column(db.String(2), nullable=True)
+    address_zip = db.Column(db.String(50), nullable=True)
 
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Address address_id=%s address=%s>" % (self.address_id, self.address)
+        return "<Address address_id=%s address=%s>" % (self.address_id, self.standard_address)
 
 
 class Chore(db.Model):
