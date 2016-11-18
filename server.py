@@ -11,6 +11,8 @@ from dateutil.relativedelta import *
 from dateutil.rrule import *
 from datetime import datetime
 
+import pprint
+
 #Consider grouping these by purpose
 
 app = Flask(__name__)
@@ -39,6 +41,8 @@ def index():
         until = now + relativedelta(months=+1)
         month_of_days_dt = rrule(DAILY,dtstart=now,until=until)
         month_of_days = [day.strftime("%A, %B %d, %Y") for day in month_of_days_dt]
+        print month_of_days
+        pprint.pprint(chores)
         return render_template("dashboard.html", user=user, chores=chores, month=month_of_days)
     else:
         return render_template("homepage.html")
@@ -63,6 +67,12 @@ def login():
 
     flash("Logged in")
     session["user_id"] = user.email  #stores userid pulled from db in session
+    return redirect("/")
+
+@app.route("/takefbuser", methods=['POST'])
+def take_fb_user():
+    """Take in user from FB Login"""
+    print request.form.get("authResponse[userID]")
     return redirect("/")
 
 

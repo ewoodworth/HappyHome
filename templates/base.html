@@ -4,6 +4,22 @@
     {% endblock %}
 </head>
 <body>
+    <script>
+    FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+});
+
+
+// ###CRAFT AJAX CALL TO SEND THE ARRAY SPI OUT FROM THIS TO SERVER
+    FB.api('/me', function(response) {
+    console.log(JSON.stringify(response));
+});
+
+
+
+    </script>
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
     START NAVBAR<br>
     Manage chores<br>
     <a href="/newchore">Add a new household chore</a><br>

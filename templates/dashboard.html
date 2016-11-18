@@ -6,10 +6,10 @@
 {% block body %}
 <div>
     {% for day in month %}
-        {% if chores[day] %}
-            {{ day }}
-            {% for chore in chores %}
-                {{ chore.name }}
+        {% if day in chores %}
+        {{ day }}<br>
+            {% for chore in chores[day] %}
+            {{ chore.name }}: {{ chore.description }} {% if chore.by_time %} before {{chore.by_time}}{% endif %}<br>
             {% endfor %}
         {% endif %}
     {% endfor %}

@@ -1,6 +1,11 @@
 import requests
 import os
 
+def google_login():
+
+def facebook_login():
+    
+
 def validate_address(address, city, state, zipcode, apartment=""):
     #APARTMENT IS ZIPCODE
     address = "+".join([address, city, state, zipcode])

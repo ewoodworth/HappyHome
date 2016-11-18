@@ -19,8 +19,10 @@ class User(db.Model):
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     email = db.Column(db.String(50), nullable=False)
+    # fb_id =  db.Column(db.String(50), nullable=True)
     password = db.Column(db.String(25), nullable=False)
     name = db.Column(db.String(50), nullable=False)
+    # lname = db.Column(db.String(50), nullable=False)
     phone_number = db.Column(db.String(15), nullable=False)
     address = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=True)

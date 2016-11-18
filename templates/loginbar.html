@@ -3,11 +3,40 @@
     <meta name="google-signin-scope" content="profile email">
     <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="/static/scripts.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <!-- <link rel="stylesheet" href="style.css"/> -->
+    <script src="/static/loginbar.js"></script>
+  <title>jQuery Example</title>
+  <script>
+  $(document).ready(function() {
+  function updateStatusCallback(thing){
+    console.log(thing);
+    $.post("/takefbuser",
+        thing);
+}
+// I DON"T HAVE TO DO A CALLBACK RIGHT? 
+
+  $.ajaxSetup({ cache: true });
+  $.getScript('//connect.facebook.net/en_US/sdk.js', function(){
+    FB.init({
+      appId: '1231432380263610',
+// HIDE THIS IN THE SESSION(LATER)
+      version: 'v2.7' // or v2.1, v2.2, v2.3, ...
+    });     
+    $('#loginbutton').removeAttr('disabled');
+    FB.getLoginStatus(updateStatusCallback);
+  });
+});
+  </script>
     {% block head %}
     {% endblock %}
 </head>
 <body>
+<!-- <div id="fb-root"></div> -->
+    <div class="fb-login-button" id="loginbutton" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="false"></div>
+    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    <button type="button" id='logoutbutton'>LOG OUT</button>
+
     <a href="/login">Log In</a><br>
     <a href="/signup">Sign Up</a><br>
     <form action="/login" method="POST">
@@ -15,8 +44,10 @@
         <input type="password" name="password" placeholder="Password" required><br>
         <input type="submit" value="Log In"><br>
     </form>
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+
+
+
     {% block body %}
     {% endblock %}
-  </body>
+</body>
 </html>
