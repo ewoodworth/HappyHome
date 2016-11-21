@@ -73,37 +73,51 @@ def login():
 def take_fb_user():
     """Take in user from FB Login"""
     fb_id = request.form.get("authResponse[userID]")
+    session["user_id"] = fb_id
+    print fb_id
     user =  User.query.filter_by(fb_id=fb_id).first() #Finds user by FB if here
 
     if not user:
         new_user = User(fb_id=fb_id)
         db.session.add(new_user)
         db.session.commit()
-        user = User.query.filter_by(fb_id=fb_id).first()
-        session["user_id"] = user.fb_id 
+        
         return redirect("/moreinfoforfbuser")
+    
     if user:
         session["user_id"] = user.email
+        
         return redirect("/")
 
-@app.route("/moreinfoforfbuser", methods=['GET'])
+@app.route("/moreinfoforfbuser")
 def fbsignupform():
     """Display new user form to collect data not gathered from fb"""
     return render_template("createuserfromfb.html")
 
 @app.route("/moreinfoforfbuser", methods=['POST'])
+def fbsignup():
     """Create new user including their fb_id"""
     fb_id = session["user_id"]
     user = User.query.filter_by(fb_id=fb_id).first()
-    user.email = request.form["email"]
-    user.password = request.form["password"]
-    user.name = request.form["name"]
-    user.lname = request.form["lname"]
-    user.phone_number = request.form["phone_number"]
+    email = request.form["email"]
+    password = request.form["password"]
+    name = request.form["name"]
+    lname = request.form["lname"]
+    phone_number = request.form["phone_number"]
+    stmt = update(users).where(users.fb_id==fb_id).values(email=email, password=password, name=name, lname=lname, phone_number=phone_number)
+
+
     db.session.commit()
     session["user_id"] = user.email #Start browser session
 
     return redirect("/")
+
+@app.route("/tokensignin", methods=['POST'])
+def validate_via_google():
+    token = request.form.get("token")
+    print request.form.get
+    print apiapijoyjoy.validate_google_token(token)
+
 
 @app.route('/signup', methods=['GET'])
 def signup():
@@ -118,10 +132,12 @@ def newuser():
     email = request.form["email"]
     password = request.form["password"]
     name = request.form["name"]
+    lname = request.form.get("lname")
     phone_number = request.form["phone_number"]
+    avatar_src = "28.png"
 
-    new_user = User(email=email, password=password, name=name, 
-               phone_number=phone_number)
+    new_user = User(email=email, password=password, name=name, lname=lname,
+               phone_number=phone_number, avatar_src=avatar_src)
 
     session["user_id"] = email #Start browser session
 
@@ -180,7 +196,7 @@ def createchore():
 
 @app.route('/newchore', methods=['POST'])
 def newchore():
-    """Process new chore"""
+    """Request form contents to create new chore in db"""
     name = request.form.get('chore_name')
     description = request.form.get('chore_description')
     duration_hours = request.form.get('duration_hours') or 0
@@ -202,8 +218,6 @@ def newchore():
 @app.route('/takeachore', methods=['GET'])
 def claimchore():
     """Claim a chore"""
-    ##FFEED THE LIST OF CHORES IN SUCH A WAY AS YOU CAN DISPLAY THEM CHRONOLOGICALLY
-
     user = dbwrangler.get_current_user()
     userchores = Userchore.query.filter_by(address_id=user.address, 
                                             commitment='INIT').all()
@@ -219,7 +233,9 @@ def claimchore():
 @app.route('/takechoreform', methods=['POST'])
 def feedjsboxes():
     """Get remaining days available for a chore and feed them to JS at takeachore.html"""
+    print request.form.get, "ALL FORM THINGS"
     form_chore_id = request.form.get("form_chore_id")
+    print form_chore_id, "CHORE ID"
     userchores = Userchore.query.filter_by(chore_id=form_chore_id).all()
     #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
@@ -227,6 +243,7 @@ def feedjsboxes():
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     days_left = base_chore.days_weekly.split("|")
     days_left = helpers.find_days_left(base_chore, userchores, days_left)
+    print days_left, "DAYS LEFT"
 
     return jsonify({'days_left': days_left,
                     'chore_id': base_chore.chore_id, 
@@ -237,7 +254,8 @@ def feedjsboxes():
 
 @app.route('/take_weekly_agreements', methods=['POST'])
 def take_weekly_agreements():
-    """ Get agreed days from form and add them to userchores table in DB"""
+    """ Get agreed days from form and add them to userchores table in DB, 
+        specific to daily and weekly chores"""
     chore_id = request.form.get("chore_id")
     daysagreed = request.form.get("daysagreed")
     daysagreed = daysagreed.split("|")
@@ -252,7 +270,8 @@ def take_weekly_agreements():
 
 @app.route('/take_monthly_agreements', methods=['POST'])
 def take_monthly_agreements():
-    """ Get agreed days from form and add them to userchores table in DB"""
+    """ Get agreed days from form and add them to userchores table in DB, 
+        specific to monthly chores"""
     chore_id = request.form.get("chore_id")
     date_monthly = request.form.get("date_monthly")
 
@@ -269,6 +288,12 @@ def logout():
     flash("Logged Out.")
     return redirect("/")
 
+@app.route('/gtokensignin', methods=['POST'])
+def check_google_token():
+    """Take token from login, verify w/Google"""
+    gtoken = request.form.get("idtoken")
+    apiapijoyjoy.validate_google_token(gtoken)
+    return redirect("/")
 
 @app.route('/user-contributions.json')
 def user_contributions_chart():
@@ -286,7 +311,7 @@ def user_contributions_chart():
         dd_data.append(individual_labor)
         leftover_labor = [total_household_labor - individual_labor]
     for housemate in all_housemates:
-        print "{} is committing to {} minutes of the household labor".format(housemate.name, individual_labor)
+        print "{} is committing to {} minutes of the household labor".format(housemate.name, dbwrangler.individual_labor(housemate.user_id))
     dd_data = [leftover_labor] + dd_data
     data_dict = {
                 "labels": dd_labels, 

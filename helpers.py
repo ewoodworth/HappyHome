@@ -5,11 +5,14 @@ from dateutil.relativedelta import *
 from dateutil.rrule import *
 from datetime import datetime
 
-MY_COLOR_FAMILY = ["#339980", "#339999", "#338099", "#336699", "#334d99", 
-                   "#333399", "#4d3399", "#663399", "#803399", "#993399", 
-                   "#993380", "#993366", "#99334d", "#993333", "#994d33", 
-                   "#994d34", "#994d35", "#994d36", "#994d37", "#994d38", 
-                   "#994d39", "#994d40", "#994d41", "#994d42"]
+MY_COLOR_FAMILY = ['#CE93D8', '#B39DDB', '#9FABDA', '#90CAF9', '#81d4fa', '#8ddeea', 
+                   '#80cbc4', '#a5d6a7', '#c5e1a5', '#BA68C8', '#9575CD', '#7986CB',
+                   '#64b5f6', '#4fc3f7', '#4dd0e1', '#4db6ac', '#81c784', '#aed581',
+                   '#AB47BC', '#7E57C2', '#5C6BC0', '#42a5f5', '#29b6f6', '#26c6da', 
+                   '#26a69a', '#66bb6a', '#9ccc65', '#9C27B0', '#673AB7', '#3F51B5', 
+                   '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a',
+                   '#8E24AA', '#5E35B1', '#3949AB', '#1e88e5', '#039be5', '#00acc1', 
+                   '#00897b', '#43ad47', '#7cb342']
 
 days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5, 'Sunday':6}
 

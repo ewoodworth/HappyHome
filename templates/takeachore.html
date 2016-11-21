@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block head %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
-<script src="/static/scripts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
 {% endblock %}
 {% block body %}
-<div>
-  <select id="initial-pulldown" name="freq">
+<div class="col-xs-12 col-md-6">
+  <select id="available-chores-pulldown" name="availchores">
     <option></option>
     {% for chore in chores %}
     <option value='{{ chore.chore_id }}'>{{ chore.name }}</option>
@@ -16,6 +16,12 @@
 </div>
 <div id='aggree-button-div'>
 </div>
+<div class="col-xs-12 col-md-6">
+  <div class="contribution-chart">
+  <canvas id="donutChart"></canvas>
+  </div>
+</div>
+<div class="col-xs-12 col-md-6">
 <div>
   <table>
     <tr>
@@ -39,11 +45,11 @@
     {% elif chore.occurance == 'monthly' %}
       Monthly on day {{ chore.date_monthly }} of the month
     {% endif %}
-    {% if chore.commment == 'ALL' %}
+    {% if chore.comment == 'ALL' %}
         at any time of day.
-      {% elif chore.commment == 'MORNING' %}
+      {% elif chore.comment == 'MORNING' %}
         in the morning.
-      {% elif chore.commment == 'EVENING' %}
+      {% elif chore.comment == 'EVENING' %}
         in the evening.
     {% elif chore.by_time %}
       at {{ chore.by_time }}
@@ -53,4 +59,10 @@
     {% endfor %}
   </table>
 </div>
+<div class="contribution-chart">
+  <canvas id="donutChart"></canvas>
+</div>
+  <!-- <div id="donutLegend" class="chart-legend"></div> LEGEND (DISABLED FOR NOW)-->
+<script src="/static/chartscripts.js"></script>
+<script src="/static/scripts.js"></script>
 {% endblock %}

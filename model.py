@@ -24,6 +24,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=True)
     lname = db.Column(db.String(50), nullable=True)
     phone_number = db.Column(db.String(15), nullable=True)
+    avatar_src = db.Column(db.String(15), nullable=True)
     address = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=True)
     chores = db.relationship("Chore",
@@ -72,7 +73,7 @@ class Chore(db.Model):
     days_weekly = db.Column(db.String, nullable=True)
     date_monthly = db.Column(db.Integer, nullable=True)
     by_time = db.Column(db.Time, nullable=True)
-    commment = db.Column(db.String(15), nullable=True)
+    comment = db.Column(db.String(15), nullable=True)
 
     def monthly_labor_hours(self):
         """Returns time(min) per month for a given chore"""

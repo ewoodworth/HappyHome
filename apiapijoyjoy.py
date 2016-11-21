@@ -1,11 +1,6 @@
 import requests
 import os
 
-def google_login():
-
-def facebook_login():
-    
-
 def validate_address(address, city, state, zipcode, apartment=""):
     #APARTMENT IS ZIPCODE
     address = "+".join([address, city, state, zipcode])
@@ -23,11 +18,26 @@ def validate_address(address, city, state, zipcode, apartment=""):
     latitude = address_json[u'results'][0][u'geometry'][u'location'][u'lat']
     longitude = address_json[u'results'][0][u'geometry'][u'location'][u'lng']
     standard_address = address_json[u'results'][0][u'formatted_address']
+    address_street_num = (address_json[u'results'][0][u'address_components'][0][u'long_name'])
+    address_street = (address_json[u'results'][0][u'address_components'][1][u'long_name'])
+    address_city = (address_json[u'results'][0][u'address_components'][3][u'long_name'])
+    address_state = (address_json[u'results'][0][u'address_components'][5][u'short_name'])
+    address_zip = (address_json[u'results'][0][u'address_components'][7][u'long_name'])
     apartment = apartment
-    #APARTMENT IS ZIPCOE
-    address_list = [latitude, longitude, standard_address, apartment]
+
+    address_list = [latitude, longitude, standard_address, address_street_num, address_street, address_city, address_state, address_zip, apartment]
 
     return address_list
+
+def validate_google_token(token):
+    """Validate google OAuth token"""
+    payload = {'token':token}
+    r = requests.get(
+    "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=", params=payload)
+    user_g_profile = r.json()
+    print user_g_profile
+    return
+
 
 
 def genkey(n):

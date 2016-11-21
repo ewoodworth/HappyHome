@@ -1,0 +1,11 @@
+.tiny-img {
+    max-height: 40px;
+    padding: 6px;
+    border: 3px;
+    border-color: #b7b7b7ff;
+
+}
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}

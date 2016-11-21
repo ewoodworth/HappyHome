@@ -25,12 +25,13 @@ def individual_labor(user_id):
     userchores = Userchore.query.filter(Userchore.user_id==user_id, Userchore.commitment!='INIT').all()
     userchores_household = [entry for entry in userchores if entry.commitment!='INIT']
     individual_labor = 0
+    print userchores
     for userchore in userchores:
         #userchore.commitment will give us how often a person says they'll do it, string
-        chore = Chore.query.filter_by(chore_id=userchore.chore_id).first() #this chore is what were considdering
+        chore = Chore.query.filter_by(chore_id=userchore.chore_id).first() #this chore is what were considering
+        print chore.name
         if chore.occurance == 'monthly':
-            if userchore.commitment:
-                individual_labor =+ chore.duration_minutes
+            individual_labor += chore.duration_minutes
         else:
             times_done = userchore.commitment.split("|")
             individual_labor += int(chore.duration_minutes) * 4 * len(times_done)
@@ -39,14 +40,21 @@ def individual_labor(user_id):
 def newaddress(address_list):
     """Validate a user's address info, create new entry or associate their 
     useraccount with an existing entry"""
-    latitude, longitude, standard_address, apartment = address_list
+    latitude, longitude, standard_address, address_street_num, address_street, address_city, address_state, address_zip, apartment = address_list
     address = Address.query.filter_by(standard_address=standard_address, 
               apartment=apartment).first()
     if address:
         pass
     if not address:
-        address =  Address(standard_address=standard_address, latitude=latitude, 
-                       longitude=longitude, apartment=apartment)
+        address =  Address(latitude=latitude, 
+                           longitude=longitude, 
+                           standard_address=standard_address, 
+                           address_street=address_street,
+                           address_street_num=address_street_num,
+                           address_city=address_city,
+                           address_state=address_state, 
+                           address_zip=address_zip, 
+                           apartment=apartment)
         db.session.add(address)
         db.session.commit()
     user = User.query.filter_by(email=session["user_id"]).first()
@@ -69,7 +77,7 @@ def newchore(name, description, duration_minutes, occurance, by_time,
                     duration_minutes=duration_minutes, 
                     occurance=occurance, 
                     by_time=by_time, 
-                    commment=comment, 
+                    comment=comment, 
                     days_weekly=days_weekly, 
                     date_monthly=date_monthly)
     db.session.add(new_chore)

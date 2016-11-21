@@ -1,8 +1,3 @@
-// BELOW THIS LINE, SCRIPT CAME FROM LOGINBAR.HTML
-
-
-
-
 // BELOW THIS LINE IS FROM NEWCHORE.HTML
     // a general function to update the secondary pulldown
     function addsecondElementOptions(color) {
@@ -35,7 +30,6 @@
     // event handler watching for change to the main pulldown
     var mainPull = $("#initial-pulldown"); 
     mainPull.change(function() {
-
       // update the secondary pulldown if there's a value
       if (mainPull.val() !== "") {
         addsecondElementOptions(mainPull.val());
@@ -46,22 +40,22 @@
     });
 
 // BELOW THIS LINE IS FROM TAKEACHORE.HTML
-  $(document).ready(function() {
+  // $(document).ready(function() {
     // event handler for change to the main pulldown
-    var mainPull = $("#initial-pulldown");
+    // var mainPull = $("#initial-pulldown");
 
-    mainPull.change(function() {
-      console.log("I'm awake!");
-      // sendFormIn();
-      // update the secondary menu if there's a value
-      if (mainPull.val() !== "") {
-        sendFormIn();
-      // otherwise, hide it
-      } else {
-        $('#secondary-form-group').hide();
-        $('aggree-button-div').hide();
-      }
-    });
+    // mainPull.change(function() {
+    //   console.log("I'm awake!");
+    //   // sendFormIn();
+    //   // update the secondary menu if there's a value
+    //   if (mainPull.val() !== "") {
+    //     sendFormIn();
+    //   // otherwise, hide it
+    //   } else {
+    //     $('#secondary-form-group').hide();
+    //     $('aggree-button-div').hide();
+    //   }
+    // });
 
     function agreeToWeeklyChore() {
         var agreementsInput = {
@@ -72,7 +66,7 @@
                   $('#Friday-checkbox').is(":checked").toString() + "|" +
                   $('#Saturday-checkbox').is(":checked").toString() + "|" +
                   $('#Sunday-checkbox').is(":checked").toString(),
-          "chore_id": $('#initial-pulldown').val()
+          "chore_id": $('#available-chores-pulldown').val()
         };
 
       $.post("/take_weekly_agreements", 
@@ -84,7 +78,7 @@
     function agreeToMonthlyChore(){
         var agreementsInput = {
           "date_monthly": $('#date_monthly-checkbox').is(":checked").toString(),
-          "chore_id": $('#initial-pulldown').val()
+          "chore_id": $('#available-chores-pulldown').val()
         };
       
 
@@ -95,14 +89,13 @@
     }
 
 
-    function successFunction(incoming){
+    function agreementTime(incoming){
       $("#secondary-form-group").empty();
       console.log(incoming.days_left)
       console.log(incoming.days_left.length)
       if (incoming.occurance == 'daily'||incoming.occurance == 'weekly') {
         for (var i = 0; i < incoming.days_left.length; i++) {
           console.log(incoming.days_left[i])
-          // $("#secondary-form-group").append("Hi! *");
           $("#secondary-form-group").append(" <input type='checkbox' id='" + incoming.days_left[i] + "-checkbox' name = 'day' value=" + incoming.days_left[i] + ">" + incoming.days_left[i][0] + incoming.days_left[i][1]);
           };
           $("#secondary-form-group").append(" <button id='weekly-agree-button'> I'll Take These Days!</button>")
@@ -121,34 +114,44 @@
 
       $('#secondary-form-group').show();
 
-    function sendFormIn() {
-        // evt.preventDefault();
+    function addCheckboxes() {
+        // evt.preventDefault()
         var formInputs = {
-          "form_chore_id": $("#initial-pulldown").val()
+          "form_chore_id": $("#available-chores-pulldown").val()
         }
 
         $.post("/takechoreform", 
             formInputs,
-            successFunction
+            agreementTime
             );
     }
 
-  });
-// ^ THIS IS FROM THE DOCUMT READY TAG AT THE TOP
+    var chooseChore = $("#available-chores-pulldown"); 
+    chooseChore.change(function() {
+      // update the secondary pulldown if there's a value
+      if (chooseChore.val() !== "") {
+        addCheckboxes(chooseChore.val());
+      // otherwise, hide it
+      } else {
+        $('#secondary-form-group').hide();
+      }
+    });
 
 
-// BELOW THIS LINE IS FROM 
-function geocodeAddress(geocoder, resultsMap) {
-  var address = document.getElementById('address').value;
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === 'OK') {
-      resultsMap.setCenter(results[0].geometry.location);
-      var marker = new google.maps.Marker({
-        map: resultsMap,
-        position: results[0].geometry.location
-      });
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
+//   });
+// // ^ THIS IS FROM THE DOCUMT READY TAG AT THE TOP
+
+// function geocodeAddress(geocoder, resultsMap) {
+//   var address = document.getElementById('address').value;
+//   geocoder.geocode({'address': address}, function(results, status) {
+//     if (status === 'OK') {
+//       resultsMap.setCenter(results[0].geometry.location);
+//       var marker = new google.maps.Marker({
+//         map: resultsMap,
+//         position: results[0].geometry.location
+//       });
+//     } else {
+//       alert('Geocode was not successful for the following reason: ' + status);
+//     }
+//   });
+// }

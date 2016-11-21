@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 {% block body %}
-<br>
-<div>
-    <img src="http://placekitten.com/225/300">
-</div>
-<div>
-<h2>
-{{ user.name }}<br>
-{{ user.email }}<br>
-{{ user.phone_number }}<br>
-{{ address.standard_address }}
-{{ address.apartment }}
-</h2>
+<div class="container">
+    <div class="col-xs-12 col-md-3">
+        <img src="static/user_img/{{ user.avatar_src }}" class="img-fluid" alt="Responsive image">
+    </div>
+    <div class="col-xs-12 col-md-9">
+            {{ user.name }} {{ user.lname[0] }}.<br>
+            {{ user.email }}<br>
+            ({{ user.phone_number[0:3] }}){{ user.phone_number[3:6] }}-{{ user.phone_number[6:] }}<br>
+            {{ address.address_street_num }} {{ address.address_street }} {% if address.apartment %}, {{ address.apartment }} {% endif %}<br>
+            {{ address.address_city }}, {{ address.address_state }} {{ address.address_zip }}
+    </div>
 </div>
 {% endblock %}
