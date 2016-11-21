@@ -66,7 +66,9 @@
                   $('#Friday-checkbox').is(":checked").toString() + "|" +
                   $('#Saturday-checkbox').is(":checked").toString() + "|" +
                   $('#Sunday-checkbox').is(":checked").toString(),
-          "chore_id": $('#available-chores-pulldown').val()
+          "chore_id": $('#available-chores-pulldown').val(),
+          "comment": $('#by_time_comment').val(),
+          "by-time": $('#by-time').val()
         };
 
       $.post("/take_weekly_agreements", 

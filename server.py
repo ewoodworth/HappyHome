@@ -283,7 +283,6 @@ def take_monthly_agreements():
 @app.route('/logout')
 def logout():
     """Log out."""
-
     del session["user_id"]
     flash("Logged Out.")
     return redirect("/")
@@ -292,8 +291,20 @@ def logout():
 def check_google_token():
     """Take token from login, verify w/Google"""
     gtoken = request.form.get("idtoken")
-    apiapijoyjoy.validate_google_token(gtoken)
-    return redirect("/")
+    g_profile = apiapijoyjoy.validate_google_token(gtoken)
+    name = g_profile['given_name']
+    lname = g_profile['family_name']
+    email = g_profile['email']
+    # start a session
+    session["user_id"] = email
+    user = User.query.filter_by(email=email).first()
+    if user:
+        pass
+    else:
+        new_user = User(email=email, name=name, lname=lname)
+        db.session.add(new_user)
+        db.session.commit()
+        # THIS WILL BE MISSING PASSWORD< PHONE NUMBER AND AVATAR
 
 @app.route('/user-contributions.json')
 def user_contributions_chart():
@@ -305,13 +316,12 @@ def user_contributions_chart():
     dd_data = []
     dd_bgcolors = helpers.color_picker(len(all_housemates)+1)
     dd_hoverbg = ["#a6a6a6", "#a6a6a6","#a6a6a6","#a6a6a6"]
+    leftover_labor = total_household_labor
     for housemate in all_housemates:
         dd_labels.append(housemate.name)
         individual_labor = dbwrangler.individual_labor(housemate.user_id)
         dd_data.append(individual_labor)
-        leftover_labor = [total_household_labor - individual_labor]
-    for housemate in all_housemates:
-        print "{} is committing to {} minutes of the household labor".format(housemate.name, dbwrangler.individual_labor(housemate.user_id))
+        leftover_labor -= individual_labor
     dd_data = [leftover_labor] + dd_data
     data_dict = {
                 "labels": dd_labels, 

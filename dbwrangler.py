@@ -25,11 +25,9 @@ def individual_labor(user_id):
     userchores = Userchore.query.filter(Userchore.user_id==user_id, Userchore.commitment!='INIT').all()
     userchores_household = [entry for entry in userchores if entry.commitment!='INIT']
     individual_labor = 0
-    print userchores
     for userchore in userchores:
         #userchore.commitment will give us how often a person says they'll do it, string
         chore = Chore.query.filter_by(chore_id=userchore.chore_id).first() #this chore is what were considering
-        print chore.name
         if chore.occurance == 'monthly':
             individual_labor += chore.duration_minutes
         else:

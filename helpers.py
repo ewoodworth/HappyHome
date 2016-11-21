@@ -79,7 +79,9 @@ def chores_by_date(user_id):
         chore = Chore.query.filter_by(chore_id=userchore.chore_id).first()
         if chore.occurance == 'weekly' or chore.occurance == 'daily':
             weekdays = userchore.commitment
-            weekdays = [days_to_int[weekday] for weekday in weekdays]
+            weekdays = [str(weekday) for weekday in weekdays]
+            print weekdays, "< < < < < < < < WEEKDAYS HERE"
+            weekdays = [days_to_int[weekday] for weekday in weekdays if weekday]
             instances = rrule(WEEKLY,dtstart=now,byweekday=weekdays,until=until)
             for instance in instances:
                 instance = instance.strftime("%A, %B %d, %Y")

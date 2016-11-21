@@ -33,10 +33,14 @@ def validate_google_token(token):
     """Validate google OAuth token"""
     payload = {'token':token}
     r = requests.get(
-    "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=", params=payload)
+    "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + payload["token"])
     user_g_profile = r.json()
-    print user_g_profile
-    return
+
+    # name = user_g_profile['given_name']
+    # lname = user_g_profile['family_name']
+    # email = user_g_profile['email']
+
+    return user_g_profile
 
 
 

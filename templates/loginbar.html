@@ -9,6 +9,7 @@
   </head>
   <body>
     <div class="container">
+        <br><br>
         <div class="col-xs-12 col-md-6">
             <p id='intro-text'>Adulting made easier! Distribute the workload of household maintainance. Help you and your roomates get on with your lives, and still make sure you know whose turn it is to take out the trash!
             </p>
@@ -41,8 +42,13 @@
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://localhost:5000/gtokensignin');
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onload = function() {
+        xhr.onload = function(response) {
           console.log('Signed in as: ' + xhr.responseText);
+          if (xhr.responseText === "FLASK SEES USER") {
+            window.location = "/";
+          } else if (xhr.responseText ===  "FLASK SEES NO USER") {
+            window.location = "/add_address";
+          }
         };
         xhr.send('idtoken=' + id_token);
       };

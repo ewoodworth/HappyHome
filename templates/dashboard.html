@@ -10,12 +10,15 @@
 <div>
     {% if chores %}
     <h2>Upcoming Chores</h2>
+    Mouse-over for more details
+    <br>
+    <br>
     {% endif %}
     {% for day in month %}
         {% if day in chores %}
-        {{ day }}<br>
+        <h3>{{ day }}</h3><br>
             {% for chore in chores[day] %}
-            <a href="#" data-toggle="tooltip" title="" data-original-title="{{ chore.description }}}"> {{ chore.name }} </a> {% if chore.by_time %} before {{chore.by_time}}{% endif %}<br>
+            <a href="#" data-toggle="tooltip" title="" data-original-title="{{ chore.description }}"> {{ chore.name }} </a> {% if chore.by_time %} before {{chore.by_time}}{% endif %}<br>
             {% endfor %}
         {% endif %}
     {% endfor %}

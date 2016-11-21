@@ -4,16 +4,18 @@
 {% block body %}
     <div>
         <form action="/process_address" method="POST">
-            <input type="text" id= "address" name="address" placeholder="Street Address">
+            Phone Number: <input type="text" name="phone_number" placeholder="Phone" required>
             <br>
-            <input type="text" id= "apartment" name="apartment" placeholder="#">
+            Street Address: <input type="text" id= "address" name="address" placeholder="Street Address">
             <br>
-            <input type="text" id= "city" name="city" placeholder="City" required><br>
-            <input type="text" id= "state" name="state" placeholder="State" required>
+            Apartment:<input type="text" id= "apartment" name="apartment" placeholder="#">
             <br>
-            <input type="text" id= "zipcode" name="zipcode" placeholder="ZIP" required>
+            City: <input type="text" id= "city" name="city" placeholder="City" required><br>
+            State: <input type="text" id= "state" name="state" placeholder="State" required>
             <br>
-            <input type="submit" id="address_button" value="Add Address">
+            Zip: <input type="text" id= "zipcode" name="zipcode" placeholder="ZIP" required>
+            <br>
+            <input type="submit" id="address_button" value="Sign Me Up!">
         </form>
     </div>
 {% endblock %}
