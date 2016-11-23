@@ -2,7 +2,7 @@
 {% block body %}
 <div class="container">
     <div class="col-xs-12 col-md-3">
-        <img src="static/user_img/{{ user.avatar_src }}" class="img-fluid" alt="Responsive image">
+        <img src="{{ user.avatar_src }}" class="img-fluid" alt="Responsive image">
     </div>
     <div class="col-xs-12 col-md-9">
             {{ user.name }} {{ user.lname[0] }}.<br>
@@ -11,5 +11,11 @@
             {{ address.address_street_num }} {{ address.address_street }} {% if address.apartment %}, {{ address.apartment }} {% endif %}<br>
             {{ address.address_city }}, {{ address.address_state }} {{ address.address_zip }}
     </div>
+    <div>
+        <button id="profil_edit_button">Edit Profile</button>
+    </div>
 </div>
+<script>
+    $()
+</script>
 {% endblock %}

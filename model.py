@@ -24,7 +24,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=True)
     lname = db.Column(db.String(50), nullable=True)
     phone_number = db.Column(db.String(15), nullable=True)
-    avatar_src = db.Column(db.String(15), nullable=True)
+    avatar_src = db.Column(db.String(30), nullable=True)
     address = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=True)
     chores = db.relationship("Chore",

@@ -45,9 +45,9 @@
         xhr.onload = function(response) {
           console.log('Signed in as: ' + xhr.responseText);
           if (xhr.responseText === "FLASK SEES USER") {
-            window.location = "/";
+            window.location = "/more_info";
           } else if (xhr.responseText ===  "FLASK SEES NO USER") {
-            window.location = "/add_address";
+            window.location = "/";
           }
         };
         xhr.send('idtoken=' + id_token);

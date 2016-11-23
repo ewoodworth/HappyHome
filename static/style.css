@@ -3,9 +3,32 @@
     padding: 6px;
     border: 3px;
     border-color: #b7b7b7ff;
-
 }
+
 .img-fluid {
     max-width: 100%;
     height: auto;
 }
+
+p {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+    font-family: 'Quando', serif;
+}
+
+
+
+/**************new_user**************/
+/*Form Elements
+#email_field
+#password_field
+#name_field
+#lname_field
+Avatars
+#user_avatars (div with all of them)
+.user_avatar (div with one of them)
+
+#sign_up_button*/
+

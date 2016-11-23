@@ -35,29 +35,37 @@ def individual_labor(user_id):
             individual_labor += int(chore.duration_minutes) * 4 * len(times_done)
     return individual_labor
 
-def newaddress(address_list):
+
+def newaddress(update_details):
     """Validate a user's address info, create new entry or associate their 
     useraccount with an existing entry"""
-    latitude, longitude, standard_address, address_street_num, address_street, address_city, address_state, address_zip, apartment = address_list
-    address = Address.query.filter_by(standard_address=standard_address, 
-              apartment=apartment).first()
+    apartment_vert =  update_details.get("apartment", False)
+    if apartment_vert:
+        address = Address.query.filter_by(standard_address=update_details["address"], 
+                                          apartment=apartment_vert).first()
+    else:
+        address = Address.query.filter_by(standard_address=update_details["address"]).first()
     if address:
         pass
     if not address:
-        address =  Address(latitude=latitude, 
-                           longitude=longitude, 
-                           standard_address=standard_address, 
-                           address_street=address_street,
-                           address_street_num=address_street_num,
-                           address_city=address_city,
-                           address_state=address_state, 
-                           address_zip=address_zip, 
-                           apartment=apartment)
+        address =  Address(latitude=update_details["latitude"], 
+                           longitude=update_details["longitude"], 
+                           standard_address=update_details["address"], 
+                           address_street=update_details["address_street"],
+                           address_street_num=update_details["address_street_num"],
+                           address_city=update_details["city"],
+                           address_state=update_details["state"], 
+                           address_zip=update_details["zipcode"])
         db.session.add(address)
         db.session.commit()
+    if apartment_vert:
+        address.apartment=update_details["apartment"]
     user = User.query.filter_by(email=session["user_id"]).first()
     user.address = address.address_id
+    user.avatar_src = update_details["user_avatar"]
+    user.phone_number = update_details["phone_number"]
     db.session.commit()
+
 
 def newchore(name, description, duration_minutes, occurance, by_time, 
                   comment, days_weekly, date_monthly):

@@ -3,7 +3,8 @@
     {% block head %}
     {% endblock %}
      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-      <link href="/static/style.css" rel="stylesheet">
+     <link href="/static/style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Quando" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -45,5 +46,9 @@
 {% endblock %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+{% block scripts %}
+{% endblock %}
+</script>
 </body>
 </html>

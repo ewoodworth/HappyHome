@@ -69,48 +69,48 @@ def login():
     session["user_id"] = user.email  #stores userid pulled from db in session
     return redirect("/")
 
-@app.route("/takefbuser", methods=['POST'])
-def take_fb_user():
-    """Take in user from FB Login"""
-    fb_id = request.form.get("authResponse[userID]")
-    session["user_id"] = fb_id
-    print fb_id
-    user =  User.query.filter_by(fb_id=fb_id).first() #Finds user by FB if here
+# @app.route("/takefbuser", methods=['POST'])
+# def take_fb_user():
+#     """Take in user from FB Login"""
+#     fb_id = request.form.get("authResponse[userID]")
+#     session["user_id"] = fb_id
+#     print fb_id
+#     user =  User.query.filter_by(fb_id=fb_id).first() #Finds user by FB if here
 
-    if not user:
-        new_user = User(fb_id=fb_id)
-        db.session.add(new_user)
-        db.session.commit()
+#     if not user:
+#         new_user = User(fb_id=fb_id)
+#         db.session.add(new_user)
+#         db.session.commit()
         
-        return redirect("/moreinfoforfbuser")
+#         return redirect("/moreinfoforfbuser")
     
-    if user:
-        session["user_id"] = user.email
+#     if user:
+#         session["user_id"] = user.email
         
-        return redirect("/")
+#         return redirect("/")
 
-@app.route("/moreinfoforfbuser")
-def fbsignupform():
-    """Display new user form to collect data not gathered from fb"""
-    return render_template("createuserfromfb.html")
+# @app.route("/moreinfoforfbuser")
+# def fbsignupform():
+#     """Display new user form to collect data not gathered from fb"""
+#     return render_template("createuserfromfb.html")
 
-@app.route("/moreinfoforfbuser", methods=['POST'])
-def fbsignup():
-    """Create new user including their fb_id"""
-    fb_id = session["user_id"]
-    user = User.query.filter_by(fb_id=fb_id).first()
-    email = request.form["email"]
-    password = request.form["password"]
-    name = request.form["name"]
-    lname = request.form["lname"]
-    phone_number = request.form["phone_number"]
-    stmt = update(users).where(users.fb_id==fb_id).values(email=email, password=password, name=name, lname=lname, phone_number=phone_number)
+# @app.route("/moreinfoforfbuser", methods=['POST'])
+# def fbsignup():
+#     """Create new user including their fb_id"""
+#     fb_id = session["user_id"]
+#     user = User.query.filter_by(fb_id=fb_id).first()
+#     email = request.form["email"]
+#     password = request.form["password"]
+#     name = request.form["name"]
+#     lname = request.form["lname"]
+#     phone_number = request.form["phone_number"]
+#     stmt = update(users).where(users.fb_id==fb_id).values(email=email, password=password, name=name, lname=lname, phone_number=phone_number)
 
 
-    db.session.commit()
-    session["user_id"] = user.email #Start browser session
+#     db.session.commit()
+#     session["user_id"] = user.email #Start browser session
 
-    return redirect("/")
+#     return redirect("/")
 
 @app.route("/tokensignin", methods=['POST'])
 def validate_via_google():
@@ -122,68 +122,87 @@ def validate_via_google():
 @app.route('/signup', methods=['GET'])
 def signup():
     """Display new user form"""
-    return render_template("createuser.html")
+    return render_template("new_user.html")
 
 
 @app.route('/signup', methods=['POST'])
 def newuser():
     """Process new user"""
 
-    email = request.form["email"]
-    password = request.form["password"]
-    name = request.form["name"]
+    email = request.form.get("email")
+    password = request.form.get("password")
+    name = request.form.get("name")
     lname = request.form.get("lname")
-    phone_number = request.form["phone_number"]
-    avatar_src = "28.png"
 
-    new_user = User(email=email, password=password, name=name, lname=lname,
-               phone_number=phone_number, avatar_src=avatar_src)
+    new_user = User(email=email, password=password, name=name, lname=lname)
 
     session["user_id"] = email #Start browser session
 
     db.session.add(new_user)
     db.session.commit()
 
-    return redirect("/add_address")
+    return redirect("/more_info")
 
+@app.route('/gtokensignin', methods=['POST'])
+def check_google_token():
+    """Take token from login, verify w/Google"""
+    gtoken = request.form.get("idtoken")
+    g_profile = apiapijoyjoy.validate_google_token(gtoken)
+    name = g_profile['given_name']
+    lname = g_profile['family_name']
+    email = g_profile['email']
+    # start a session
+    session["user_id"] = email
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return "FLASK SEES USER"
+    else:
+        new_user = User(email=email, name=name, lname=lname)
+        db.session.add(new_user)
+        db.session.commit()
+        return "FLASK SEES NO USER"
 
 @app.route("/user")
 def user_profile():
     """Show user profile"""
     user = dbwrangler.get_current_user()
     address = Address.query.filter_by(address_id=user.address).first()
-    userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
-    chore_ids = [userchore.chore_id for userchore in userchores]
-    total_labor_minutes = 0
-    for item in chore_ids:
-        chore = Chore.query.filter_by(chore_id=item).first()
-        # monthly labor hours for this exact chore
-        if chore.occurance == 'daily':
-            monthly_minutes = int(chore.duration_minutes) * 30
-        elif chore.occurance == 'weekly':
-            monthly_minutes = len(chore.days_weekly.split("|")) * 4 * int(chore.duration_minutes)
-        elif chore.occurance == 'monthly':
-            monthly_minutes  = int(chore.duration_minutes)
-        total_labor_minutes = total_labor_minutes + monthly_minutes
+    # userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()
+    # chore_ids = [userchore.chore_id for userchore in userchores]
+    # total_labor_minutes = 0
+    # for item in chore_ids:
+    #     chore = Chore.query.filter_by(chore_id=item).first()
+    #     # monthly labor hours for this exact chore
+    #     if chore.occurance == 'daily':
+    #         monthly_minutes = int(chore.duration_minutes) * 30
+    #     elif chore.occurance == 'weekly':
+    #         monthly_minutes = len(chore.days_weekly.split("|")) * 4 * int(chore.duration_minutes)
+    #     elif chore.occurance == 'monthly':
+    #         monthly_minutes  = int(chore.duration_minutes)
+    #     total_labor_minutes = total_labor_minutes + monthly_minutes
     return render_template("user.html", user=user, address=address)
 
+# @app.route("/edit_user")
+# def edit_user_profile():
+#     """Provide form to get updates to user profile"""
+#     user = dbwrangler.get_current_user()
+#     address = Address.query.filter_by(address_id=user.address).first()
+#     return render_template("createuser.html", user=user, address=address)
 
-@app.route('/add_address')
+@app.route('/more_info')
 def new_address():
     """Present new address form"""
-    return render_template("joinhousehold.html")
+    return render_template("new_user_more.html")
 
 
-@app.route('/process_address', methods=['POST'])
+@app.route('/complete_registration', methods=['POST'])
 def process_address():
-    """Add address to user account"""                
-    address = request.form.get("address")
-    apartment = request.form.get("apartment")
-    city =  request.form.get("city")
-    state =  request.form.get("state")
-    zipcode = request.form.get("zipcode")
-    address_list = apiapijoyjoy.validate_address(address, city, state, zipcode, apartment)
-    dbwrangler.newaddress(address_list)
+    """Add address to user account"""
+    # [('phone_number', u'4155555555'), ('city', u'San Francisco'), ('state', u'CA'), ('apartment', u'101'), ('user_avatar', u'/static/user_img/7.png'), ('address', u'1410 32nd Ave., 101'), ('zipcode', u'94122')])
+    user_details = request.form
+    update_details = apiapijoyjoy.validate_address(user_details)
+    print user_details
+    dbwrangler.newaddress(update_details)
     
     return redirect("/")
 
@@ -286,25 +305,6 @@ def logout():
     del session["user_id"]
     flash("Logged Out.")
     return redirect("/")
-
-@app.route('/gtokensignin', methods=['POST'])
-def check_google_token():
-    """Take token from login, verify w/Google"""
-    gtoken = request.form.get("idtoken")
-    g_profile = apiapijoyjoy.validate_google_token(gtoken)
-    name = g_profile['given_name']
-    lname = g_profile['family_name']
-    email = g_profile['email']
-    # start a session
-    session["user_id"] = email
-    user = User.query.filter_by(email=email).first()
-    if user:
-        pass
-    else:
-        new_user = User(email=email, name=name, lname=lname)
-        db.session.add(new_user)
-        db.session.commit()
-        # THIS WILL BE MISSING PASSWORD< PHONE NUMBER AND AVATAR
 
 @app.route('/user-contributions.json')
 def user_contributions_chart():
