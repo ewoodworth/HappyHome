@@ -27,7 +27,7 @@ def individual_labor(user_id):
     individual_labor = 0
     for userchore in userchores:
         #userchore.commitment will give us how often a person says they'll do it, string
-        chore = Chore.query.filter_by(chore_id=userchore.chore_id).first() #this chore is what were considering
+        chore = Chore.query.filter_by(chore_id=userchore.chore_id).first()
         if chore.occurance == 'monthly':
             individual_labor += chore.duration_minutes
         else:
@@ -96,7 +96,8 @@ def newchore(name, description, duration_minutes, occurance, by_time,
     db.session.commit()
 
 def add_commitment(days_aggreed, chore_id):
-    """ Take in a list of days the user is committing to, add their commitment to userchores table """
+    """ Take in a list of days the user is committing to, add their commitment 
+    to userchores table """
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
     new_userchore = Userchore(user_id=user.user_id, address_id=user.address, 

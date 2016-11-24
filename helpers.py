@@ -24,12 +24,7 @@ def find_days_left(base_chore, userchores, days_left):
         elif chore.commitment:
             chore.commitment = str(chore.commitment)
             days_committed = chore.commitment.split("|")
-            print days_committed, "< < < < < DAYS COMMITTED"
-            print days_left, " < < < < < < <DAYS LEFT"
             for day in days_committed:
-                print day, "< < < < < < THIS IS THE DAY IN LOOP"
-                print days_left, " < < < < < < <DAYS LEFT THAT THE DAY IS GETTING TAKEN OFF OF"
-                print type(days_left), "TYPE OF DAYS_LEFT"
                 days_left.remove(day)
     return days_left
 
@@ -37,10 +32,6 @@ def find_days_left(base_chore, userchores, days_left):
 
 def total_household_labor():
     """Get the total number of minutes for all the chores associated with a user's address"""
-    # (total chore labor for all chores)
-    # unique userchores in userchore where userchore.address_id=user.address
-    # for these chore_ids
-    # total monthly labor per chore sum
     user_id = session["user_id"]
     user = User.query.filter_by(email=user_id).first()
     userchores = Userchore.query.filter_by(address_id=user.address, commitment='INIT').all()

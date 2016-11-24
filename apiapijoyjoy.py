@@ -2,9 +2,7 @@ import requests
 import os
 
 def validate_address(user_details):
-    #APARTMENT IS ZIPCODE
-
-    # [('phone_number', u'4155555555'), ('city', u'San Francisco'), ('state', u'CA'), ('apartment', u'101'), ('user_avatar', u'/static/user_img/7.png'), ('address', u'1410 32nd Ave., 101'), ('zipcode', u'94122')])
+    """Send address details to google for validation and standardization"""
     address = "+".join([user_details["address"], user_details["city"], user_details["state"], user_details["zipcode"]])
     address = address.replace(" ", "+")
     geocode_block = address +"+"+ user_details["city"] +"+"+ user_details["state"] +"+"+ user_details["zipcode"]
@@ -16,6 +14,7 @@ def validate_address(user_details):
     "https://maps.googleapis.com/maps/api/geocode/json?", params=payload)
     address_json = r.json()
     #parse JSON for latitutde and longitude
+    #requests' immutable dict object is going to be a pain in the next step. Cast as a python dictionary to head this off here.
     update_details = {}
     update_details["latitude"] = address_json[u'results'][0][u'geometry'][u'location'][u'lat']
     update_details["longitude"] = address_json[u'results'][0][u'geometry'][u'location'][u'lng']
@@ -36,10 +35,6 @@ def validate_google_token(token):
     r = requests.get(
     "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + payload["token"])
     user_g_profile = r.json()
-
-    # name = user_g_profile['given_name']
-    # lname = user_g_profile['family_name']
-    # email = user_g_profile['email']
 
     return user_g_profile
 
