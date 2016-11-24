@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block body %}
+    <form action="/signup" method="POST">
+        Name: <input type="text" id="name_field" name="name" placeholder="Name" required><br>
+        Last Name: <input type="text" id="lname_field" name="lname" placeholder="Last Name" required><br>
+        Email: <input type="email" id="email_field" name="email" placeholder="Email" required><br>
+        Password: <input type="password" id="password_field" name="password" placeholder="Password" required><br>
+        <input type="submit" id="sign_up_button" value="Sign Up">
+    </form>
+{% endblock %}
+{% block script %}
+    $(".user_img_option").click($("#user_avatar").attr(""))
+{% endblock %}
