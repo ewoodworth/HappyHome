@@ -1,36 +1,93 @@
-from jinja2 import StrictUndefined
+import helpers, dbwrangler, apiapijoyjoy
+import unittest
+from server import app
 
-from flask import Flask, jsonify, render_template, request, flash, redirect, session
-from flask_debugtoolbar import DebugToolbarExtension
+class HappyHomeUnitTestCase(unittest.TestCase):
+    """unittests for HappyHome"""
+    
+    def test_validate_address(user_details):
+        assert apiapijoyjoy.validate_address
 
-from model import connect_to_db, db, User, Address, Chore, Userchore
+    def test_validate_google_token(token):
+        assert apiapijoyjoy.validate_google_token
 
-import dbwrangler, apiapijoyjoy, sys, helpers
+    # def test_genkey(n):
+    #     assert len(apiapijoyjoy.genkey(4)) == 4
 
-from dateutil.relativedelta import *
-from dateutil.rrule import *
-from datetime import datetime
+    def test_get_current_user():
+        assert dbwrangler.get_current_user
 
-import pprint
-import inflect
+    def test_total_houehold_labor(user):
+        assert dbwrangler.total_houehold_labor
 
-#Consider grouping these by purpose
+    def test_individual_labor(user_id):
+        assert dbwrangler.individual_labor
 
-app = Flask(__name__)
+    def test_find_days_left(base_chore, userchores, days_left):
+        assert helpers.find_days_left
 
-# Required to use Flask sessions and the debug toolbar
-app.secret_key = "S33KR1T"
+    def test_total_household_labor():
+        assert helpers.total_houehold_labor
 
-# Normally, if you use an undefined variable in Jinja2, it fails silently.
-# This is horrible. Fix this so that, instead, it raises an error.
-app.jinja_env.undefined = StrictUndefined
-app.jinja_env.auto_reload=True
+    def test_color_picker(n_users):
+        assert helpers.color_picker
 
-days_of_the_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5, 'Sunday':6}
+    def test_chores_by_date(user_id):
+        assert helpers.chores_by_date
+
+class FlaskTests(TestCase):
+
+    def setUp(self):
+        """Stuff to do before every test."""
+
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
+
+        # Create tables and add sample data
+        db.create_all()
+        example_data()
+
+    def tearDown(self):
+        """Do at end of every test."""
+
+        db.session.close()
+        db.drop_all()
+
+    def test_some_db_thing(self):
+        """Some database test..."""
+
+    def test_newaddress(update_details):
+        assert dbwrangler.newaddress
+
+    def test_newchore(name, description, duration_minutes, occurance, by_time, 
+                  comment, days_weekly, date_monthly):
+        assert dbwrangler.newchore
+
+    def test_add_commitment(days_aggreed, chore_id):
+        assert dbwrangler.add_commitment
 
 
-@app.route('/')
+# def load_tests(loader, tests, ignore):
+#     """Also run our doctests and file-based doctests.
+#
+#     This function name, ``load_tests``, is required.
+#     """
+#
+#     tests.addTests(doctest.DocTestSuite(arithmetic))
+#     tests.addTests(doctest.DocFileSuite("tests.txt"))
+#     return tests
+
+
+if __name__ == '__main__':
+    # If called like a script, run our tests
+    unittest.main()
+
+
+
+
+
+
+    @app.route('/')
 def index():
     """Homepage."""
     if session.get('user_id', False):
@@ -181,8 +238,6 @@ def claimchore():
                                      for userchore in userchores]
     for chore in chores:
         chore.days_weekly = chore.days_weekly.split("|")
-        if chore.date_monthly:
-            chore.date_monthly = inflect.engine().ordinal(chore.date_monthly)
 
     return render_template("takeachore.html", chores=chores, 
                             userchores=userchores, user=user)
@@ -191,9 +246,7 @@ def claimchore():
 @app.route('/takechoreform', methods=['POST'])
 def feedjsboxes():
     """Get remaining days available for a chore and feed them to JS at takeachore.html"""
-    print request.form.get, "ALL FORM THINGS"
     form_chore_id = request.form.get("form_chore_id")
-    print form_chore_id, "CHORE ID"
     userchores = Userchore.query.filter_by(chore_id=form_chore_id).all()
     #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
@@ -201,8 +254,6 @@ def feedjsboxes():
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     days_left = base_chore.days_weekly.split("|")
     days_left = helpers.find_days_left(base_chore, userchores, days_left)
-    print days_left, "DAYS LEFT"
-
     return jsonify({'days_left': days_left,
                     'chore_id': base_chore.chore_id, 
                     'chore_name': base_chore.name,
@@ -228,59 +279,9 @@ def take_weekly_agreements():
 
 @app.route('/take_monthly_agreements', methods=['POST'])
 def take_monthly_agreements():
-    """ Get agreed days from form and add them to userchores table in DB, 
-        specific to monthly chores"""
-    chore_id = request.form.get("chore_id")
-    date_monthly = request.form.get("date_monthly")
-
-    dbwrangler.add_commitment(date_monthly, chore_id)
-
-    return redirect("/takeachore")
-
 
 @app.route('/user-contributions.json')
 def user_contributions_chart():
-    """Return a chart of data about household contributions."""
-    user = dbwrangler.get_current_user()
-    all_housemates = User.query.filter_by(address=user.address).all()
-    total_household_labor = dbwrangler.total_houehold_labor(user)
-    dd_labels = ["Unclaimed"]
-    dd_data = []
-    dd_bgcolors = helpers.color_picker(len(all_housemates)+1)
-    dd_hoverbg = ["#a6a6a6", "#a6a6a6","#a6a6a6","#a6a6a6"]
-    leftover_labor = total_household_labor
-    for housemate in all_housemates:
-        dd_labels.append(housemate.name)
-        individual_labor = dbwrangler.individual_labor(housemate.user_id)
-        dd_data.append(individual_labor)
-        leftover_labor -= individual_labor
-    dd_data = [leftover_labor] + dd_data
-    data_dict = {
-                "labels": dd_labels, 
-                "datasets":[{"data":dd_data, 
-                "backgroundColor":dd_bgcolors, 
-                "hoverBackgroundColor":dd_hoverbg}]
-                }
-
 
 @app.route('/logout')
 def logout():
-    """Log out."""
-    del session["user_id"]
-    flash("Logged Out.")
-    return redirect("/")
-
-    return jsonify(data_dict)
-
-if __name__ == "__main__":
-    # We have to set debug=True here, since it has to be True at the point
-    # that we invoke the DebugToolbarExtension
-
-    # Do not debug for demo
-    app.debug = True
-
-    connect_to_db(app)
-    # Use the DebugToolbar
-    DebugToolbarExtension(app)
-
-    app.run(host='0.0.0.0', debug=True)

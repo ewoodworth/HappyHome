@@ -39,23 +39,6 @@
       }
     });
 
-// BELOW THIS LINE IS FROM TAKEACHORE.HTML
-  // $(document).ready(function() {
-    // event handler for change to the main pulldown
-    // var mainPull = $("#initial-pulldown");
-
-    // mainPull.change(function() {
-    //   console.log("I'm awake!");
-    //   // sendFormIn();
-    //   // update the secondary menu if there's a value
-    //   if (mainPull.val() !== "") {
-    //     sendFormIn();
-    //   // otherwise, hide it
-    //   } else {
-    //     $('#secondary-form-group').hide();
-    //     $('aggree-button-div').hide();
-    //   }
-    // });
 
     function agreeToWeeklyChore() {
         var agreementsInput = {
@@ -96,14 +79,15 @@
       console.log(incoming.days_left)
       console.log(incoming.days_left.length)
       if (incoming.occurance == 'daily'||incoming.occurance == 'weekly') {
+        $("#secondary-form-group").append("<br><h3>Select the days you'll do it:</h3>");
         for (var i = 0; i < incoming.days_left.length; i++) {
           console.log(incoming.days_left[i])
           $("#secondary-form-group").append(" <input type='checkbox' id='" + incoming.days_left[i] + "-checkbox' name = 'day' value=" + incoming.days_left[i] + ">" + incoming.days_left[i][0] + incoming.days_left[i][1]);
           };
-          $("#secondary-form-group").append(" <button id='weekly-agree-button'> I'll Take These Days!</button>")
+          $("#secondary-form-group").append("<br><br><button id='weekly-agree-button'> I'll Take These Days!</button>")
       } else if (incoming.occurance == 'monthly') {
-        $("#secondary-form-group").append(" <input type='checkbox' id='date_monthly-checkbox' name = 'date_monthly' value='checkbox'>" + incoming.date_monthly);
-        $("#secondary-form-group").append(" <button id='monthly-agree-button'> I'll Do This!</button>");
+        $("#secondary-form-group").append("<h3>Select the days you'll do it:</h3><br>On the <input type='checkbox' id='date_monthly-checkbox' name = 'date_monthly' value='checkbox'>" + incoming.date_monthly +"th of every month.");
+        $("#secondary-form-group").append("<br><br> <button id='monthly-agree-button'> I'll Do This!</button>");
       }
 
       $("#weekly-agree-button").click(function() { 
@@ -140,20 +124,15 @@
     });
 
 
-//   });
-// // ^ THIS IS FROM THE DOCUMT READY TAG AT THE TOP
+  var options = { responsive: true };
 
-// function geocodeAddress(geocoder, resultsMap) {
-//   var address = document.getElementById('address').value;
-//   geocoder.geocode({'address': address}, function(results, status) {
-//     if (status === 'OK') {
-//       resultsMap.setCenter(results[0].geometry.location);
-//       var marker = new google.maps.Marker({
-//         map: resultsMap,
-//         position: results[0].geometry.location
-//       });
-//     } else {
-//       alert('Geocode was not successful for the following reason: ' + status);
-//     }
-//   });
-// }
+  var ctx_donut = $("#donutChart").get(0).getContext("2d");
+
+  $.get("/user-contributions.json", function (data) {
+      var myDonutChart = new Chart(ctx_donut, {
+                                              type: 'doughnut',
+                                              data: data,
+                                              options: options
+                                            });
+      $('#donutLegend').html(myDonutChart.generateLegend());
+  });

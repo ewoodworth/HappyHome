@@ -1,8 +1,59 @@
+body {
+    background-color: #d4d4d4;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+
+
+.navbar-collapse {
+    background-color: #ABE2EB;
+    padding: 0;
+}
+
+h1 {
+    font-family: 'Quando', serif;
+}
+
+h2 {
+    font-family: 'Quando', serif;
+}
+
+h3 {
+    font-family: 'Quando', serif;
+}
+
+h4{
+    font-family: 'Open Sans', sans-serif;
+    color: black;
+}
+
+p {
+    font-family: 'Open Sans', sans-serif;
+    color: black;
+}
+
+.logo {
+    width: 75px;
+    border: 2px;
+    border-color: #ABE2EB;
+}
+
 .tiny-img {
-    max-height: 40px;
-    padding: 6px;
+    max-height: 50px;
+    padding: 0;
     border: 3px;
-    border-color: #b7b7b7ff;
+    border-color: #ABE2EB;
+}
+
+.container-fluid {
+    padding-right: 15px;
+    padding-left: 0;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .img-fluid {
@@ -10,16 +61,38 @@
     height: auto;
 }
 
-p {
+.blue_line { 
+    height: 4px;
+    width: 15em;
+    background-color: #ABE2EB;
+}
+
+.block {
     font-family: 'Open Sans', sans-serif;
 }
 
-h1 {
+.heading {
     font-family: 'Quando', serif;
+    font-size: 75px;
 }
 
+#navbar_menu {
+    font-family: 'Quando', serif;
+    font-size: large;
+    background-color: #ABE2EB;
+}
 
+#secondary-form-group {
+    font-family: 'Open Sans', sans-serif;
+    }
 
+#aggree-button-div {
+    font-family: 'Open Sans', sans-serif;
+}
+
+#new_chore_form {
+    font-family: 'Open Sans', sans-serif;
+}
 /**************new_user**************/
 /*Form Elements
 #email_field

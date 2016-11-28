@@ -5,23 +5,27 @@
     <meta name="google-signin-client_id" content="953238239415-4mvdahlpba71b5c5aqphsva7pvt2qlto.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Quando" rel="stylesheet">
     <link href="/static/style.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
         <br><br>
         <div class="col-xs-12 col-md-6">
-            <p id='intro-text'>Adulting made easier! Distribute the workload of household maintainance. Help you and your roomates get on with your lives, and still make sure you know whose turn it is to take out the trash!
+            <h1 class="heading"><img src="static/logo.png" class="logo">Happy Home</h1>
+            <p id='intro-text' class='block'>Adulting made easier! Distribute the workload of household maintainance. Help you and your roomates get on with your lives, without losing track of whose turn it is to take out the trash!
             </p>
         </div>
         <div class="col-xs-12 col-md-6">
             <form action="/login" method="POST">
-                <input type="email" name="email" placeholder="Email" required><br>
-                <input type="password" name="password" placeholder="Password" required><br>
-                <input type="submit" value="Log In">
-                <a href="/signup"><button type="button">Sign Up</button></a><br>
+                <input class="form_input" type="email" name="email" placeholder="Email" required><br>
+                <input class="form_input" type="password" name="password" placeholder="Password" required><br>
+                <input class="form_input" type="submit" value="Log In">
             </form>
             <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+
+
+            <a href="/signup"><button type="button">Sign Up</button></a><br>
         </div>
     </div>
     <script>

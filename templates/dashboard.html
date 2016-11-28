@@ -16,9 +16,15 @@
     {% endif %}
     {% for day in month %}
         {% if day in chores %}
-        <h3>{{ day }}</h3><br>
+        <h3 class="chore_header">{{ day }}<br>
+        <div class="blue_line"></div></h3>
             {% for chore in chores[day] %}
-            <a href="#" data-toggle="tooltip" title="" data-original-title="{{ chore.description }}"> {{ chore.name }} </a> {% if chore.by_time %} before {{chore.by_time}}{% endif %}<br>
+            <h4>
+            <a href="#" data-toggle="tooltip" title="" data-original-title="{{ chore.description }}"> 
+                {{ chore.name }} </a> {% if chore.by_time %} before 
+                {{chore.by_time}}{% endif %}
+            </h4>
+            <br>
             {% endfor %}
         {% endif %}
     {% endfor %}
