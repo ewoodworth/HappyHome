@@ -5,6 +5,7 @@
 {% block body %}
 <h1>Enter a New Chore
 </h1>
+  <div class="indent_content">
     <form action="/newchore" method="POST" id="new_chore_form">
         We need to:
         <br>
@@ -24,14 +25,13 @@
             How often does this need to be done:
           </label>
           <br>
-          <select id="initial-pulldown" class="pulldown-width spacey form-control" width="35" name="occurance">
+          <select id="initial-pulldown" name="occurance">
             <option></option>
             <option value='daily'>daily</option>
             <option value='weekly'>weekly</option>
             <option value='monthly'>monthly</option>
           </select>
         </div>
-      </div>
       <br>
       <div id="secondary-form-group" style="display:none">
         <div class="form-group">
@@ -62,5 +62,7 @@
       </div>
       <input type="submit" value="Submit">
     </form>
+  </div>
+  </div>
 <script src="/static/scripts.js"></script>
 {% endblock %}

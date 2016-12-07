@@ -10,19 +10,20 @@
   </head>
   <body>
     <div class="container">
-        <br><br>
         <div class="col-xs-12 col-md-6">
+            <br><br>
             <h1 class="heading"><img src="static/logo.png" class="logo">Happy Home</h1>
             <p id='intro-text' class='block'>Adulting made easier! Distribute the workload of household maintainance. Help you and your roomates get on with your lives, without losing track of whose turn it is to take out the trash!
             </p>
         </div>
-        <div class="col-xs-12 col-md-6">
+        <div class="col-xs-12 col-md-6 login_fields">
+            <br><br>
             <form action="/login" method="POST">
                 <input class="form_input" type="email" name="email" placeholder="Email" required><br>
-                <input class="form_input" type="password" name="password" placeholder="Password" required><br>
+                <input class="form_input" type="password" name="password" placeholder="Password" required><br><br>
                 <input class="form_input" type="submit" value="Log In">
-            </form>
-            <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+            </form><br>
+            <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div><br>
 
 
             <a href="/signup"><button type="button">Sign Up</button></a><br>

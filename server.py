@@ -68,7 +68,7 @@ def login():
 
     flash("Logged in")
     session["user_id"] = user.email  #stores userid pulled from db in session
-    return redirect("/")
+    return redirect("/user")
 
 @app.route("/tokensignin", methods=['POST'])
 def validate_via_google():
@@ -123,13 +123,18 @@ def check_google_token():
 def user_profile():
     """Show user profile"""
     user = dbwrangler.get_current_user()
+    all_housemates = User.query.filter_by(address=user.address).all()
     address = Address.query.filter_by(address_id=user.address).first()
-    return render_template("user.html", user=user, address=address)
+    return render_template("user.html", user=user, address=address, all_housemates=all_housemates)
 
 @app.route('/more_info')
 def new_address():
     """Present new address form"""
-    return render_template("new_user_more.html")
+    user = dbwrangler.get_current_user()
+    if not user:
+        return render_template("new_user_more.html")
+    else:
+        return redirect("/")
 
 
 @app.route('/complete_registration', methods=['POST'])
@@ -162,6 +167,7 @@ def newchore():
     comment = request.form.get('comment')
     by_time = request.form.get('by-time')
     days_weekly = request.form.getlist('days_weekly')
+    print days_weekly, "< < < < < < < < < < < < FROM SERVER"
     date_monthly = request.form.get('date_monthly')
 
     dbwrangler.newchore(name, description, duration_minutes, occurance, by_time, 
@@ -177,6 +183,7 @@ def claimchore():
     user = dbwrangler.get_current_user()
     userchores = Userchore.query.filter_by(address_id=user.address, 
                                             commitment='INIT').all()
+    ####CHORES SHOULD ONLY INCLUDE CHORES THAT STILL NEED TO BE DONE
     chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first()
                                      for userchore in userchores]
     for chore in chores:
@@ -191,9 +198,7 @@ def claimchore():
 @app.route('/takechoreform', methods=['POST'])
 def feedjsboxes():
     """Get remaining days available for a chore and feed them to JS at takeachore.html"""
-    print request.form.get, "ALL FORM THINGS"
     form_chore_id = request.form.get("form_chore_id")
-    print form_chore_id, "CHORE ID"
     userchores = Userchore.query.filter_by(chore_id=form_chore_id).all()
     #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
     base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
@@ -201,7 +206,6 @@ def feedjsboxes():
     base_chore = Chore.query.filter_by(chore_id=base_userchore[0].chore_id).first()
     days_left = base_chore.days_weekly.split("|")
     days_left = helpers.find_days_left(base_chore, userchores, days_left)
-    print days_left, "DAYS LEFT"
 
     return jsonify({'days_left': days_left,
                     'chore_id': base_chore.chore_id, 
@@ -261,7 +265,8 @@ def user_contributions_chart():
                 "backgroundColor":dd_bgcolors, 
                 "hoverBackgroundColor":dd_hoverbg}]
                 }
-
+                
+    return jsonify(data_dict)
 
 @app.route('/logout')
 def logout():
@@ -270,7 +275,7 @@ def logout():
     flash("Logged Out.")
     return redirect("/")
 
-    return jsonify(data_dict)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

@@ -27,53 +27,27 @@
 
 </div>
 
-<div class="col-xs-12 col-md-6 contribution-chart">
+<div class="col-xs-12 col-md-6">
+  <div class="contribution-chart">
 <!--   <div class="contribution-chart"> -->
     <canvas id="donutChart"></canvas>
+  </div>
 <!--   </div> -->
 </div>
+<script>  
 
-<!-- <div class="col-xs-12 col-md-6">
-  <table>
-    <tr>
-      <td>
-        Chore
-      </td>
-      <td>
-        Frequency
-      </td>
-    </tr>
-    {% for chore in chores %}
-    <tr>
-    <td>
-    {{ chore.name }}
-    </td>
-    <td>
-    {% if chore.occurance == 'daily' %}
-      Every day
-    {% elif chore.occurance == 'weekly' %}
-      Weekly on {% for item in chore.days_weekly %}{{ item }} {% endfor %}
-    {% elif chore.occurance == 'monthly' %}
-      Monthly on day {{ chore.date_monthly }} of the month
-    {% endif %}
-    {% if chore.comment == 'ALL' %}
-        at any time of day.
-      {% elif chore.comment == 'MORNING' %}
-        in the morning.
-      {% elif chore.comment == 'EVENING' %}
-        in the evening.
-    {% elif chore.by_time %}
-      at {{ chore.by_time }}
-    {% endif %}
-    </td>
-    </tr>
-    {% endfor %}
-  </table>
-</div> -->
-<!-- <div class="contribution-chart">
-  <canvas id="donutChart"></canvas>
-</div> -->
-  <!-- <div id="donutLegend" class="chart-legend"></div> LEGEND (DISABLED FOR NOW)-->
-<!-- <script src="/static/chartscripts.js"></script> -->
+  var options = { responsive: true };
+
+  var ctx_donut = $("#donutChart").get(0).getContext("2d");
+
+  $.get("/user-contributions.json", function (data) {
+      var myDonutChart = new Chart(ctx_donut, {
+                                              type: 'doughnut',
+                                              data: data,
+                                              options: options
+                                            });
+      $('#donutLegend').html(myDonutChart.generateLegend());
+  });
+  </script>
 <script src="/static/scripts.js"></script>
 {% endblock %}

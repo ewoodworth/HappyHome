@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
+<div class="indent_content">
     <form action="/signup" method="POST">
         Name: <input type="text" id="name_field" class="form_input" name="name" 
         placeholder="Name" required><br>
@@ -11,6 +12,7 @@
         name="password" placeholder="Password" required><br>
         <input type="submit" id="sign_up_button" value="Sign Up">
     </form>
+</div>
 {% endblock %}
 {% block script %}
     $(".user_img_option").click($("#user_avatar").attr(""))

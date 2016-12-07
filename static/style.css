@@ -61,10 +61,19 @@ p {
     height: auto;
 }
 
+.housemate_img{
+    padding: 0px;
+    margin: 8px;
+}
+
+.login_fields {
+    padding-top: 78px;
+}
+
 .blue_line { 
     height: 4px;
     width: 15em;
-    background-color: #ABE2EB;
+    background-color: #8BD6E4;
 }
 
 .block {
@@ -74,6 +83,16 @@ p {
 .heading {
     font-family: 'Quando', serif;
     font-size: 75px;
+}
+
+.indent_content {
+    font-family: 'Open Sans', sans-serif;
+    color: black;
+    padding-left: 3em;
+}
+
+#user_chore_display {
+    padding-left: 3em;
 }
 
 #navbar_menu {
@@ -93,6 +112,10 @@ p {
 #new_chore_form {
     font-family: 'Open Sans', sans-serif;
 }
+
+/*#initial-pulldown {
+    max-width: 25em;
+}*/
 /**************new_user**************/
 /*Form Elements
 #email_field
