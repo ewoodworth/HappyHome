@@ -19,7 +19,7 @@ import inflect
 app = Flask(__name__)
 
 # Required to use Flask sessions and the debug toolbar
-app.secret_key = "S33KR1T"
+app.secret_key = "S334R1T"
 
 # Normally, if you use an undefined variable in Jinja2, it fails silently.
 # This is horrible. Fix this so that, instead, it raises an error.
@@ -183,13 +183,26 @@ def claimchore():
     user = dbwrangler.get_current_user()
     userchores = Userchore.query.filter_by(address_id=user.address, 
                                             commitment='INIT').all()
-    ####CHORES SHOULD ONLY INCLUDE CHORES THAT STILL NEED TO BE DONE
-    chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first()
+    #Below: chores that this belong to this user's address
+    address_chores = [Chore.query.filter_by(chore_id=userchore.chore_id).first()
                                      for userchore in userchores]
+    chores = []
+    for chore in address_chores:
+        #gather userchore entries for this chore
+        userchores = Userchore.query.filter_by(chore_id=chore.chore_id).all()
+        #isolate the item from ^ that is the clean (first) member of that chore inside userchores(table)
+        base_userchore = [userchore for userchore in userchores if userchore.commitment == 'INIT']
+        #get the rest of the chore data associated with that chore
+        days_left = chore.days_weekly.split("|")
+        days_left = helpers.find_days_left(chore, userchores, days_left)
+        if len(days_left) != 0:
+            chores.append(chore)
     for chore in chores:
+        #recast the occurance dates for these as lists
         chore.days_weekly = chore.days_weekly.split("|")
         if chore.date_monthly:
             chore.date_monthly = inflect.engine().ordinal(chore.date_monthly)
+
 
     return render_template("takeachore.html", chores=chores, 
                             userchores=userchores, user=user)

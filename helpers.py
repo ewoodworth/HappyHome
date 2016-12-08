@@ -25,7 +25,11 @@ def find_days_left(base_chore, userchores, days_left):
             chore.commitment = str(chore.commitment)
             days_committed = chore.commitment.split("|")
             for day in days_committed:
-                days_left.remove(day)
+                print "DAYS LEFT", days_left
+                print "DAY", day
+                if day in days_left:
+                    days_left.remove(day)
+    print len(days_left)
     return days_left
 
 
