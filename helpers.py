@@ -1,8 +1,8 @@
 from flask import session
 from model import User, Address, Chore, Userchore
 
-from python-dateutil.relativedelta import *
-from python-dateutil.rrule import *
+import dateutil.relativedelta
+import dateutil.rrule
 from datetime import datetime
 
 MY_COLOR_FAMILY = ['#CE93D8', '#B39DDB', '#9FABDA', '#90CAF9', '#81d4fa', '#8ddeea', 
