@@ -7,8 +7,8 @@ from model import connect_to_db, db, User, Address, Chore, Userchore
 
 import dbwrangler, apiapijoyjoy, sys, helpers
 
-from dateutil.relativedelta import *
-from dateutil.rrule import *
+import dateutil.relativedelta
+imports dateutil.rrule
 from datetime import datetime
 
 import pprint
