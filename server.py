@@ -302,7 +302,7 @@ if __name__ == "__main__":
     # Do not debug for demo
     app.debug = False
 
-    connect_to_db(app)
+    connect_to_db(app, os.environ.get("DATABASE_URL"))
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
