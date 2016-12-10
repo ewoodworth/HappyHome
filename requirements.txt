@@ -19,7 +19,6 @@ parsedatetime==2.1
 pathlib2==2.1.0
 pexpect==4.2.1
 pickleshare==0.7.4
-pkg-resources==0.0.0
 prompt-toolkit==1.0.8
 psycopg2==2.6.2
 ptyprocess==0.5.1
