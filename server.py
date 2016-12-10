@@ -7,6 +7,8 @@ from model import connect_to_db, db, User, Address, Chore, Userchore
 
 import sys
 
+import os
+
 import dbwrangler, apiapijoyjoy, sys, helpers
 
 import dateutil
