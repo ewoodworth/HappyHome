@@ -304,4 +304,6 @@ if __name__ == "__main__":
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
-    app.run(host='0.0.0.0', debug=False)
+    PORT = int(os.environ.get("PORT", 5000))
+
+    app.run(host='0.0.0.0', debug=False, port=PORT)
