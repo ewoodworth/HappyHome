@@ -5,6 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, Userchore
 
+import sys
+
 import dbwrangler, apiapijoyjoy, sys, helpers
 
 import dateutil
@@ -33,6 +35,7 @@ days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4,
 @app.route('/')
 def index():
     """Homepage."""
+    sys.stderr.write("Before server routing by login status")
     if session.get('user_id', False):
         user = dbwrangler.get_current_user()
         user_id = user.user_id
