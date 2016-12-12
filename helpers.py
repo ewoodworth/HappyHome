@@ -1,9 +1,9 @@
 from flask import session
 from model import User, Address, Chore, Userchore
 
-from dateutil import relativedelta
-from dateutil import rrule
-from datetime import datetime
+# from dateutil.relativedelta import relativedelta
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY
+from datetime import datetime, timedelta
 
 MY_COLOR_FAMILY = ['#CE93D8', '#B39DDB', '#9FABDA', '#90CAF9', '#81d4fa', '#8ddeea', 
                    '#80cbc4', '#a5d6a7', '#c5e1a5', '#BA68C8', '#9575CD', '#7986CB',
@@ -65,14 +65,13 @@ def chores_by_date(user_id):
     for userchore in userchores:
         userchore.commitment = userchore.commitment.split("|")
     now = datetime.utcnow()
-    until = now + relativedelta(months=+1)
+    until = now + timedelta(weeks=4)
     chores_by_date = {}
     for userchore in userchores:
         chore = Chore.query.filter_by(chore_id=userchore.chore_id).first()
         if chore.occurance == 'weekly' or chore.occurance == 'daily':
             weekdays = userchore.commitment
             weekdays = [str(weekday) for weekday in weekdays]
-            print weekdays, "< < < < < < < < WEEKDAYS HERE"
             weekdays = [days_to_int[weekday] for weekday in weekdays if weekday]
             instances = rrule(WEEKLY,dtstart=now,byweekday=weekdays,until=until)
             for instance in instances:

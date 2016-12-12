@@ -1,9 +1,12 @@
 from jinja2 import StrictUndefined
 
 from flask import Flask, jsonify, render_template, request, flash, redirect, session
+
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Address, Chore, Userchore
+
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY
 
 import sys
 
@@ -13,9 +16,8 @@ import dbwrangler, apiapijoyjoy, sys, helpers
 
 import dateutil
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
-import pprint
 import inflect
 
 #Consider grouping these by purpose
@@ -37,18 +39,15 @@ days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4,
 @app.route('/')
 def index():
     """Homepage."""
-    sys.stderr.write("Before server routing by login status")
     if session.get('user_id', False):
         user = dbwrangler.get_current_user()
         user_id = user.user_id
         #return all chores at this address
         chores = helpers.chores_by_date(user_id)
         now = datetime.utcnow()
-        until = now + relativedelta(months=+1)
+        until = now + timedelta(weeks=4)
         month_of_days_dt = rrule(DAILY,dtstart=now,until=until)
         month_of_days = [day.strftime("%A, %B %d, %Y") for day in month_of_days_dt]
-        print month_of_days
-        pprint.pprint(chores)
         return render_template("dashboard.html", user=user, chores=chores, month=month_of_days)
     else:
         return render_template("homepage.html")
@@ -113,6 +112,7 @@ def check_google_token():
     name = g_profile['given_name']
     lname = g_profile['family_name']
     email = g_profile['email']
+    print email, "EMAIL IS"
     # start a session
     session["user_id"] = email
     user = User.query.filter_by(email=email).first()
@@ -300,12 +300,13 @@ if __name__ == "__main__":
     # that we invoke the DebugToolbarExtension
 
     # Do not debug for demo
-    app.debug = False
+    app.debug = True
 
     connect_to_db(app, os.environ.get("DATABASE_URL"))
+
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
     PORT = int(os.environ.get("PORT", 5000))
 
-    app.run(host='0.0.0.0', debug=False, port=PORT)
+    app.run(host='0.0.0.0', debug=True, port=PORT)
