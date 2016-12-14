@@ -1,5 +1,5 @@
 #Happy Home
-[login screenshot](http://imgur.com/HNi9b)
+[login screenshot](http://imgur.com/eynlDmy)
 ##Technologies used:
 Python, Flask, PostgreSQL, SQLAlchemy, HTML/CSS, Bootstrap3, Javascript, jQuery, AJAX, Google OAuth, Google Maps Geocoding
 ##The Gist:
