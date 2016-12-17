@@ -136,10 +136,10 @@ def user_profile():
 def new_address():
     """Present new address form"""
     user = dbwrangler.get_current_user()
-    if not user:
+    if user:
         return render_template("new_user_more.html")
     else:
-        return redirect("/new_user_more.html")
+        return redirect("/")
 
 
 @app.route('/complete_registration', methods=['POST'])
