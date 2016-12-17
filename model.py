@@ -2,6 +2,7 @@
 
 
 from flask_sqlalchemy import SQLAlchemy
+import os
 # import correlation
 
 # This is the connection to the PostgreSQL database; we're getting this through
