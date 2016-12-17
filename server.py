@@ -72,7 +72,7 @@ def login():
 
     flash("Logged in")
     session["user_id"] = user.email  #stores userid pulled from db in session
-    return redirect("/user")
+    return redirect("/more_info")
 
 @app.route("/tokensignin", methods=['POST'])
 def validate_via_google():

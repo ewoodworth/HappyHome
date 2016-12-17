@@ -1,7 +1,7 @@
 """Models and database functions for final project."""
 
 
-from flask_sqlalchemy import SQLAlchemy
+from flask-sqlalchemy import SQLAlchemy
 # import correlation
 
 # This is the connection to the PostgreSQL database; we're getting this through
