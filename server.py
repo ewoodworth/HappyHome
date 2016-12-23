@@ -1,24 +1,19 @@
 from jinja2 import StrictUndefined
-
 from flask import Flask, jsonify, render_template, request, flash, redirect, session
-
 from flask_debugtoolbar import DebugToolbarExtension
-
 from model import connect_to_db, db, User, Address, Chore, Userchore
-
 from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY
 
 import sys
-
 import os
 
 import dbwrangler, apiapijoyjoy, sys, helpers
 
 import dateutil
-
 from datetime import datetime, timedelta
-
 import inflect
+from social.apps.flask_app.routes import social_auth
+from social.exceptions import SocialAuthBaseException
 
 #Consider grouping these by purpose
 
@@ -31,10 +26,46 @@ app.secret_key = "S334R1T"
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 app.jinja_env.auto_reload=True
+app.register_blueprint(social_auth)
 
 days_of_the_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5, 'Sunday':6}
 
+
+SOCIAL_AUTH_USER_MODEL = 'model.User'
+
+#### REMEMBERING SESSIONS
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['keep']
+
+SOCIAL_AUTH_REMEMBER_SESSION_NAME = 'remember_me'
+
+#### BEGIN ROUTES RELATING TO PYTHON-SOCIAL ####
+@app.before_request
+def global_user():
+    g.user = get_current_logged_in_user
+
+@login_manager.user_loader
+def load_user(userid):
+    try:
+        return User.query.get(int(userid))
+    except (TypeError, ValueError):
+        pass
+
+
+@app.before_request
+def global_user():
+    g.user = login.current_user
+
+
+# Make current user available on templates
+@app.context_processor
+def inject_user():
+    try:
+        return {'user': g.user}
+    except AttributeError:
+        return {'user': None}
+
+#### END ROUTES RELATING TO PYTHON-SOCIAL ####
 
 @app.route('/')
 def index():
@@ -294,6 +325,10 @@ def logout():
     return redirect("/")
 
 
+@app.errorhandler(500)
+def error_handler(error):
+    if isinstance(error, SocialAuthBaseException):
+        return redirect('/socialerror')
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

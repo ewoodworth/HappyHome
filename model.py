@@ -2,6 +2,7 @@
 
 
 from flask_sqlalchemy import SQLAlchemy
+from social.apps.flask_app.default.models import init_social
 import os
 # import correlation
 
@@ -135,6 +136,7 @@ def connect_to_db(app, db_uri=None):
     db.app = app
     db.init_app(app)
 
+    init_social(app, db)
 
 if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will leave
