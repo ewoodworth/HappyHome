@@ -2,6 +2,7 @@
 
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from social.apps.flask_app.default.models import init_social
 import os
 # import correlation
@@ -11,6 +12,8 @@ import os
 # object, where we do most of our interactions (like committing, etc.)
 
 db = SQLAlchemy()
+
+migrate = Migrate(db.app, db)
 
 ##############################################################################
 # Model definitions
@@ -27,6 +30,8 @@ class User(db.Model):
     lname = db.Column(db.String(50), nullable=True)
     phone_number = db.Column(db.String(15), nullable=True)
     avatar_src = db.Column(db.String(30), nullable=True)
+    # is_authenticated = db.Column(db.Boolean, default=False)
+    # is_active = db.Column(db.Boolean, default=False)
     address = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), 
               nullable=True)
     chores = db.relationship("Chore",

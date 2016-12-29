@@ -2,7 +2,7 @@ from jinja2 import StrictUndefined
 from flask import Flask, jsonify, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Address, Chore, Userchore
-from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY
+from dateutil import rrule
 
 import sys
 import os
