@@ -47,7 +47,7 @@ login_manager = LoginManager()
 
 @app.before_request
 def global_user():
-    g.user = get_current_logged_in_user
+    g.user = dbwrangler.get_current_user()
     return
 
 @login_manager.user_loader
