@@ -25,47 +25,52 @@ app.secret_key = "S334R1T"
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 app.jinja_env.auto_reload=True
-# app.register_blueprint(social_auth)
+
+### BLUEPRINT FOR SOCIAL AUTH ###
+app.register_blueprint(social_auth)
+SOCIAL_AUTH_USER_MODEL = 'model.User'
+
+#### REMEMBERING SESSIONS (INTEGRATION PARTICULAR TO SOCIAL AUTH) ###
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['keep']
+
+SOCIAL_AUTH_REMEMBER_SESSION_NAME = 'remember_me'
+
+#Constants to manipulate 
+
 
 days_of_the_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5, 'Sunday':6}
 
-# SOCIAL_AUTH_USER_MODEL = 'model.User'
-
-#### REMEMBERING SESSIONS
-# SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['keep']
-
-# SOCIAL_AUTH_REMEMBER_SESSION_NAME = 'remember_me'
 
 #### BEGIN ROUTES RELATING TO PYTHON-SOCIAL ####
-# login_manager = LoginManager()
+login_manager = LoginManager()
 
-# @app.before_request
-# def global_user():
-#     g.user = get_current_logged_in_user
-#     return
+@app.before_request
+def global_user():
+    g.user = get_current_logged_in_user
+    return
 
-# @login_manager.user_loader
-# def load_user(userid):
-#     try:
-#         return User.query.get(int(userid))
-#     except (TypeError, ValueError):
-#         pass
-
-
-# @app.before_request
-# def global_user():
-#     g.user = login.current_user
-#     return
+@login_manager.user_loader
+def load_user(userid):
+    try:
+        return User.query.get(int(userid))
+    except (TypeError, ValueError):
+        pass
 
 
-# Make current user available on templates
-# @app.context_processor
-# def inject_user():
-#     try:
-#         return {'user': g.user}
-#     except AttributeError:
-#         return {'user': None}
+@app.before_request
+def global_user():
+    g.user = login.current_user
+    return
+
+
+#Make current user available on templates
+@app.context_processor
+def inject_user():
+    try:
+        return {'user': g.user}
+    except AttributeError:
+        return {'user': None}
 
 #### END ROUTES RELATING TO PYTHON-SOCIAL ####
 
@@ -402,10 +407,11 @@ def logout():
     return redirect("/")
 
 
-# @app.errorhandler(500)
-# def error_handler(error):
-#     if isinstance(error, SocialAuthBaseException):
-#         return redirect('/socialerror')
+@app.errorhandler(500)
+def error_handler(error):
+    """Error handling for social oauth"""
+    if isinstance(error, SocialAuthBaseException):
+        return redirect('/socialerror')
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
@@ -416,7 +422,7 @@ if __name__ == "__main__":
 
     connect_to_db(app, os.environ.get("DATABASE_URL"))
 
-    # login_manager.init_app(app)
+    login_manager.init_app(app)
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)

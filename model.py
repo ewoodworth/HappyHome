@@ -3,7 +3,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
 # from flask_migrate import Migrate
-# from social.apps.flask_app.default.models import init_social
+from social.apps.flask_app.default.models import init_social
 import os
 # import correlation
 
