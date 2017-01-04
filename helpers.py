@@ -2,7 +2,7 @@ from flask import session
 from model import User, Address, Chore, Userchore
 
 # from dateutil.relativedelta import relativedelta
-from dateutil import rrule
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY
 from datetime import datetime, timedelta
 
 MY_COLOR_FAMILY = ['#CE93D8', '#B39DDB', '#9FABDA', '#90CAF9', '#81d4fa', '#8ddeea', 

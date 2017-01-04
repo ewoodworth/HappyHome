@@ -135,6 +135,9 @@ def connect_to_db(app, db_uri=None):
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri or 'postgresql:///happyhome'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['SQLALCHEMY_ECHO'] = True
+
+    db.app = app
+    db.init_app(app)
     
 if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will leave
@@ -144,7 +147,6 @@ if __name__ == "__main__":
     connect_to_db(app)
     print "Connected to DB."
 
-    db.app = app
-    db.init_app(app)
+
 
     # init_social(app, db)

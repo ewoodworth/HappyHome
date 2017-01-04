@@ -3,7 +3,7 @@ from flask import Flask, jsonify, render_template, request, flash, redirect, ses
 from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Address, Chore, Userchore
-from dateutil import rrule
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY
 
 import sys
 import os
@@ -87,7 +87,7 @@ def index():
         #define a delta of 4 weeks
         until = now + timedelta(weeks=4)
         #generate a list of datetimes for each day in the next month
-        month_of_days_dt = rrule(DAILY, dtstart=now, until=until)
+        month_of_days_dt = rrule(freq=DAILY, dtstart=now, until=until)
         #cast list of datetimes into human-friendly string format
         month_of_days = [day.strftime("%A, %B %d, %Y") for day in month_of_days_dt]
         #feed the template a month of days, and all chores for the logged in user. Jinja will display chores by day.
