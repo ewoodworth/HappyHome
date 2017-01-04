@@ -2,8 +2,8 @@
 
 
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from social.apps.flask_app.default.models import init_social
+# from flask_migrate import Migrate
+# from social.apps.flask_app.default.models import init_social
 import os
 # import correlation
 
@@ -13,7 +13,7 @@ import os
 
 db = SQLAlchemy()
 
-migrate = Migrate(db.app, db)
+# migrate = Migrate(db.app, db)
 
 ##############################################################################
 # Model definitions
@@ -136,13 +136,6 @@ def connect_to_db(app, db_uri=None):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['SQLALCHEMY_ECHO'] = True
     
-
-
-    db.app = app
-    db.init_app(app)
-
-    init_social(app, db)
-
 if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will leave
     # you in a state of being able to work with the database directly.
@@ -150,3 +143,8 @@ if __name__ == "__main__":
     from server import app
     connect_to_db(app)
     print "Connected to DB."
+
+    db.app = app
+    db.init_app(app)
+
+    # init_social(app, db)
