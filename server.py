@@ -81,7 +81,7 @@ def index():
         user_id = user.user_id
         #return a dictionary of one user's chores for a month, grouped by day
         chores = helpers.chores_by_date(user_id)
-        print len chores
+        print len(chores)
         #mark the current datetime, assign to now
         now = datetime.utcnow()
         #define a delta of 4 weeks
@@ -396,28 +396,31 @@ def user_contributions_chart():
 @app.route('/logout')
 def logout():
     """Log out."""
+    #delete the session key and value for user_id. Return user to homepage (with an emoty session dict)
     del session["user_id"]
     flash("Logged Out.")
     return redirect("/")
 
 
-@app.errorhandler(500)
-def error_handler(error):
-    if isinstance(error, SocialAuthBaseException):
-        return redirect('/socialerror')
+# @app.errorhandler(500)
+# def error_handler(error):
+#     if isinstance(error, SocialAuthBaseException):
+#         return redirect('/socialerror')
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
 
     # Do not debug for demo
-    app.debug = False
+    app.debug = True
 
     connect_to_db(app, os.environ.get("DATABASE_URL"))
+
+    # login_manager.init_app(app)
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
     PORT = int(os.environ.get("PORT", 5000))
 
-    app.run(host='0.0.0.0', debug=False, port=PORT)
+    app.run(host='0.0.0.0', debug=True, port=PORT)
