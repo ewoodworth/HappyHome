@@ -1,5 +1,6 @@
 from jinja2 import StrictUndefined
 from flask import Flask, jsonify, render_template, request, flash, redirect, session
+from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Address, Chore, Userchore
 from dateutil import rrule
@@ -14,8 +15,6 @@ from social.apps.flask_app.routes import social_auth
 from social.exceptions import SocialAuthBaseException
 
 import dbwrangler, apiapijoyjoy, sys, helpers
-
-#Consider grouping these by purpose
 
 app = Flask(__name__)
 
