@@ -1,5 +1,5 @@
 from jinja2 import StrictUndefined
-from flask import Flask, jsonify, render_template, request, flash, redirect, session
+from flask import Flask, jsonify, render_template, request, flash, redirect, session, g
 from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Address, Chore, Userchore
@@ -9,7 +9,7 @@ import sys
 import os
 import dateutil
 from datetime import datetime, timedelta
-import inflect
+import inflection
 import bcrypt
 from social.apps.flask_app.routes import social_auth
 from social.exceptions import SocialAuthBaseException
@@ -46,9 +46,12 @@ days_to_int = {'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4,
 login_manager = LoginManager()
 
 @app.before_request
+#before every request, perform the function(s) here
 def global_user():
-    g.user = dbwrangler.get_current_user()
-    return
+    if session.get('user_id', False):
+        g.user = dbwrangler.get_current_user()
+    else:
+        return
 
 @login_manager.user_loader
 def load_user(userid):
@@ -56,13 +59,6 @@ def load_user(userid):
         return User.query.get(int(userid))
     except (TypeError, ValueError):
         pass
-
-
-@app.before_request
-def global_user():
-    g.user = login.current_user
-    return
-
 
 #Make current user available on templates
 @app.context_processor
@@ -78,7 +74,6 @@ def inject_user():
 def index():
     """Homepage."""
     #if there's a user_id in our Flask session, use that to open the app to the user. Otherwise, send the user to a signup page
-
     if session.get('user_id', False):
         #show the user their upcoming chores
         #get the current user (email)
@@ -86,7 +81,6 @@ def index():
         user_id = user.user_id
         #return a dictionary of one user's chores for a month, grouped by day
         chores = helpers.chores_by_date(user_id)
-        print len(chores)
         #mark the current datetime, assign to now
         now = datetime.utcnow()
         #define a delta of 4 weeks
@@ -96,8 +90,10 @@ def index():
         #cast list of datetimes into human-friendly string format
         month_of_days = [day.strftime("%A, %B %d, %Y") for day in month_of_days_dt]
         #feed the template a month of days, and all chores for the logged in user. Jinja will display chores by day.
+        # sys.stderr.write("USER NOT LOGGED IN (PYTHON, ROUTE:'/')\n")
         return render_template("dashboard.html", user=user, chores=chores, month=month_of_days)
     else:
+        # sys.stderr.write("USER LOGGED IN (PYTHON, ROUTE:'/')")
         return render_template("homepage.html")
 
 
