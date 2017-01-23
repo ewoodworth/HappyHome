@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container">
+    <div class="col-xs-12 col-md-2">
+        <img src="{{ user.avatar_src }}" class="img-fluid" alt="Responsive image">
+    </div>
+    <div class="col-xs-12 col-md-4 indent_content">
+    <div>
+            Name: {{ user.name }} {{ user.lname[0] }}.<br>
+            Email: {{ user.email }}<br>
+            Phone: ({{ user.phone_number[0:3] }}){{ user.phone_number[3:6] }}-{{ user.phone_number[6:] }}<br>
+            Address:<br>
+            <div class="indent_content">
+            {{ address.address_street_num }} {{ address.address_street }} {% if address.apartment %}, {{ address.apartment }} {% endif %}<br>
+            {{ address.address_city }}, {{ address.address_state }} {{ address.address_zip }}<br>
+            </div><br>
+            <button id="profil_edit_button">Edit Profile</button>
+    </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        Your Household:<br>
+        {% for housemate in all_housemates %}
+            <div class="col-xs-1 housemate_img">
+            <img src="{{ housemate.avatar_src }}" class="img-fluid tiny-img" alt="Responsive image"><br>
+            {{ housemate.name }}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    $()
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="https://code.jquery.com/jquery.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script> -->
+{% endblock %}
+{% block body %}
+<!-- <div class="contribution-chart">
+  <canvas id="donutChart"></canvas>
+</div> -->
+<div class="indent_content">
+    {% if chores %}
+    <h2>Upcoming Chores</h2>
+    Mouse-over for more details
+    <div id="user_chore_display">
+    <br>
+    <br>
+    {% endif %}
+    {% for day in month %}
+        {% if day in chores %}
+        <h3 class="chore_header">{{ day }}<br>
+        <div class="blue_line"></div></h3>
+            <div class="indent_content">
+                {% for chore in chores[day] %}
+                <a href="#" data-toggle="tooltip" title="" data-original-title="{{ chore.description }}"> 
+                    {{ chore.name }} </a> {% if chore.by_time %} before 
+                    {{chore.by_time}}{% endif %}
+                    <br>
+                {% endfor %}
+            </div>
+            <br>
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>
+  <!-- <div id="donutLegend" class="chart-legend"></div> LEGEND (DISABLED FOR NOW)-->
+<!-- <script src="/static/chartscripts.js"></script> -->
+<script>$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}

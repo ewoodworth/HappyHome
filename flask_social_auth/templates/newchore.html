@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+{% endblock %}
+{% block body %}
+<h1>Enter a New Chore
+</h1>
+  <div class="indent_content">
+    <form action="/newchore" method="POST" id="new_chore_form">
+        We need to:
+        <br>
+        <input type="text" class="form_input" name="chore_name" placeholder="Title" size="35" required>
+        <br>
+        Which involves:
+        <br>
+        <textarea class="form_input" name="chore_description" placeholder="Descriuption" size="35" required></textarea>
+        <br>
+        This usually takes:
+        <br>
+        <input type="text" class="form_input" name="duration_hours" placeholder="Hr" size="6">
+        <input type="text" class="form_input" name="duration_minutes" placeholder="Min" size="6">
+        <div id="initial-form-group" class="form-group">
+          <br>
+          <label class="headline-label" for="initial-pulldown">
+            How often does this need to be done:
+          </label>
+          <br>
+          <select id="initial-pulldown" name="occurance">
+            <option></option>
+            <option value='daily'>daily</option>
+            <option value='weekly'>weekly</option>
+            <option value='monthly'>monthly</option>
+          </select>
+        </div>
+      <br>
+      <div id="secondary-form-group" style="display:none">
+        <div class="form-group">
+          <label id="secondary-label" class="headline-label" for="secondary-element">
+          </label>
+          <div id="secondary-element">
+          </div>
+        </div>
+      </div>
+      <br>
+      <div id="time-form-group" style="display:none">
+        <div class="form-group">
+          <label id="by-time-label" for="by-time">
+          This chore needs to happen at:
+          </label>
+          <br> 
+          <input type='radio' name='time_comment' value='ALL' id='by_time_comment' checked='checked'>Any Time
+          <br>
+          <input type='radio' name='time_comment' value='MORNING'>Any time in the morning
+          <br>
+          <input type='radio' name='time_comment' value='EVENING'>Any time in the evening
+          <br>
+          <label id="by-time-label" for="by-time">
+          This time:
+          </label>
+          <input type='time' class="form_input" name='by-time' id='by-time'>
+        </div>
+      </div>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+  </div>
+<script src="/static/scripts.js"></script>
+{% endblock %}
