@@ -158,9 +158,9 @@ class Userchore(db.Model):
     commitment = db.Column(db.String(50), nullable=True)
 
     # Define relationship to foreign keys in other tables
-    user = relationship("User", backref=backref('users', order_by=))
-    chore = relationship("Chore", backref=backref('chores', order_by=))
-    address = relationship("Address", backref=backref('addresses', order_by=))
+    user = relationship("User", backref=backref('users'))
+    chore = relationship("Chore", backref=backref('chores'))
+    address = relationship("Address", backref=backref('addresses'))
 
     def __repr__(self):
         """Provide helpful representation when printed."""

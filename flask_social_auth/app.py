@@ -9,6 +9,7 @@ from social_flask.routes import social_auth
 from social.apps.flask_app.template_filters import backends
 from social.exceptions import SocialAuthBaseException
 
+db = SQLAlchemy()
 
 def create_app(config_object=DevConfig):
     """The application factory.
