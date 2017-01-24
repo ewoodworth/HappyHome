@@ -1,11 +1,16 @@
 """User models."""
 import datetime as dt
+import os
+import sys
+
+sys.path.append('/home/vagrant/src/HappyHome/env/lib/python2.7/site-packages')
+sys.path.append('/home/vagrant/src/HappyHome/flask_social_auth')
 
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship, backref
 from flask_sqlalchemy import SQLAlchemy
 # from app import app
-from flask_social_auth.extensions import db, bcrypt
+from extensions import db, bcrypt
 
 
 class Role(db.Model):
