@@ -173,24 +173,50 @@ class Userchore(db.Model):
                 self.user_id , self.chore_id , self.address_id, self.rating, 
                 self.commitment)
 
+# # # # # # # # # # # #
+#START FLASK SQLAlchemy CONFIGURATION CLASSES
+# # # # # # # # # # # #
+class Config:
+    SECRET_KEY = 'development key'
+    ADMINS = frozenset(['THIS WILL BE MY EMAIL', ])
+
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'postgresql:///happyhome'
+
+class ProductionConfig(Config):
+    SECRET_KEY = 'Prod key'
+    db_uri = os.environ['DATABASE_URL']
+    SQLALCHEMY_DATABASE_URI = db_uri
+
+
+config = { 
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+}
+
+
 
 ##############################################################################
 # Helper functions
+#COPIED FROM HB PROJECT< SEE IF THEY"RE STILL NEEDED WITH FULL FLASK SUPPORT
 
-def connect_to_db(app, db_uri=None):
-    """Connect the database to our Flask app."""
-    # Configure to use our PostgreSQL database
-    if not db_uri and 'DATABASE_URL' in os.environ:
-        db_uri = os.environ['DATABASE_URL']
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri or 'postgresql:///happyhome'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-    app.config['SQLALCHEMY_ECHO'] = True
+# def connect_to_db(app, db_uri=None):
+#     """Connect the database to our Flask app."""
+#     # Configure to use our PostgreSQL database
+#     if not db_uri and 'DATABASE_URL' in os.environ:
+#         db_uri = os.environ['DATABASE_URL']
+#     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri or 'postgresql:///happyhome'
+#     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+#     app.config['SQLALCHEMY_ECHO'] = True
 
-    db.app = app
-    db.init_app(app)
+#     db.app = app
+#     db.init_app(app)
     
-if __name__ == "__main__":
-    # As a convenience, if we run this module interactively, it will leave
-    # you in a state of being able to work with the database directly.
-    connect_to_db(app)
-    print "Connected to DB."
+# if __name__ == "__main__":
+#     # As a convenience, if we run this module interactively, it will leave
+#     # you in a state of being able to work with the database directly.
+#     connect_to_db(app)
+#     print "Connected to DB."
