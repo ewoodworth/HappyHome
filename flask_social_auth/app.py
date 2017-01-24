@@ -27,6 +27,8 @@ def create_app(config_object=DevConfig):
     register_errorhandlers(app)
     register_context_processors(app)
     register_teardown_appcontext(app)
+    
+    db.init_app(app)
     return app
 
 
