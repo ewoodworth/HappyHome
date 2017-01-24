@@ -187,7 +187,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     SECRET_KEY = 'Prod key'
-    db_uri = os.environ['DATABASE_URL']
+    db_uri = os.environ.get('DATABASE_URL', None)
     SQLALCHEMY_DATABASE_URI = db_uri
 
 
