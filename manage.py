@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 import os
+import sys
+
+sys.path.append('/home/vagrant/src/HappyHome/env/lib/python2.7/site-packages')
 
 from flask_script import Manager, Server, Shell
 from flask_social_auth.app import create_app
