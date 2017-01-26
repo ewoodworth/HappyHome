@@ -10,7 +10,7 @@ from flask_social_auth.extensions import db
 from flask_social_auth.settings import DevConfig
 from flask_social_auth.user.models import User
 
-import config
+# import config
 
 app = create_app(DevConfig)
 

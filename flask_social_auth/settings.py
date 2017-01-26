@@ -38,10 +38,20 @@ class DevConfig(Config):
     SOCIAL_AUTH_FACEBOOK_SECRET = '6e363707597ff8bbd369194eef8505f5'
     SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 
-    DB_NAME = 'dev.db'
+    DB_NAME = 'happyhome.db'
     # Put the db file in project root
     DB_PATH = os.path.join(Config.PROJECT_ROOT, DB_NAME)
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///{0}'.format(DB_PATH)
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///{0}'.format(DB_PATH)
+    SQLALCHEMY_DATABASE_URI = 'postgresql:///happyhome'
+
+
+########
+#May need this later for production parameters versus development parameters
+########
+# class ProductionConfig(Config):
+#     SECRET_KEY = 'Prod key'
+#     db_uri = os.environ.get('DATABASE_URL', None)
+#     SQLALCHEMY_DATABASE_URI = db_uri
 
 
 class TestConfig(Config):
@@ -53,3 +63,26 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     BCRYPT_LOG_ROUNDS = 1
     WTF_CSRF_ENABLED = False
+
+
+##############################################################################
+# Helper functions
+#COPIED FROM HB PROJECT< SEE IF THEY"RE STILL NEEDED WITH FULL FLASK SUPPORT
+
+# def connect_to_db(app, db_uri=None):
+#     """Connect the database to our Flask app."""
+#     # Configure to use our PostgreSQL database
+#     if not db_uri and 'DATABASE_URL' in os.environ:
+#         db_uri = os.environ['DATABASE_URL']
+#     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri or 'postgresql:///happyhome'
+#     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+#     app.config['SQLALCHEMY_ECHO'] = True
+
+#     db.app = app
+#     db.init_app(app)
+    
+# if __name__ == "__main__":
+#     # As a convenience, if we run this module interactively, it will leave
+#     # you in a state of being able to work with the database directly.
+#     connect_to_db(app)
+#     print "Connected to DB."
